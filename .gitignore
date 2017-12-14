@@ -1,0 +1,10 @@
+
+/.vs/
+/dotnet/ClosetRpc.Net/bin/
+/dotnet/ClosetRpc.Net/obj/
+/dotnet/MessagingTestServer/bin/
+/dotnet/MessagingTestServer/obj/
+/dotnet/TransportTestClient/bin/
+/dotnet/TransportTestClient/obj/
+/dotnet/TransportTestServer/bin/
+/dotnet/TransportTestServer/obj/

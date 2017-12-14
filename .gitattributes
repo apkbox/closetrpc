@@ -1,0 +1,9 @@
+*.zip -delta
+*.png -delta
+*.jpg -delta
+*.gif -delta
+*.msi -delta
+*.tif -delta
+*.tiff -delta
+*.dll -delta
+
