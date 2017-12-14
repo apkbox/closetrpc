@@ -10,3 +10,6 @@
 /dotnet/TransportTestServer/obj/
 /dotnet/MessagingTestClient/bin/
 /dotnet/MessagingTestClient/obj/
+/dotnet/ClosetRpc.Test/bin/
+/dotnet/ClosetRpc.Test/obj/
+/packages/

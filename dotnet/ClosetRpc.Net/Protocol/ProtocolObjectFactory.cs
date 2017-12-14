@@ -38,11 +38,15 @@ namespace ClosetRpc.Net.Protocol
             {
                 var message = new RpcMessage();
                 message.RequestId = reader.ReadUInt32();
-                Debug.Fail("See TODO");
-                // TODO: Do not fill call/result portion if not present on the stream
-                // as this makes it impossible distinguish event call from call result
-                message.Call = new RpcCall(reader);
-                message.Result = new RpcResult(reader);
+                var contentFlags = reader.ReadByte();
+                if ((contentFlags & 0x01) != 0)
+                {
+                    message.Call = new RpcCall(reader);
+                }
+                if ((contentFlags & 0x02) != 0)
+                {
+                    message.Result = new RpcResult(reader);
+                }
                 return message;
             }
         }
@@ -52,8 +56,16 @@ namespace ClosetRpc.Net.Protocol
             using (var writer = new BinaryWriter(stream, Encoding.UTF8, true))
             {
                 writer.Write(requestId);
-                this.WriteCall(writer, new RpcCall((RpcCallBuilder)callBuilder));
-                this.WriteResult(writer, (RpcResult)result);
+                byte contentFlags = (byte)((callBuilder != null ? 0x01 : 0) | (result != null ? 0x02 : 0));
+                writer.Write(contentFlags);
+                if (callBuilder != null)
+                {
+                    new RpcCall((RpcCallBuilder)callBuilder).Serialize(writer);
+                }
+                if (result != null)
+                {
+                    ((RpcResult)result).Serialize(writer);
+                }
             }
         }
 
