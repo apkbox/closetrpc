@@ -46,4 +46,4 @@ namespace ClosetRpc.Net
 
         #endregion
     }
-} // namespace ClosetRpc.Net
+}

@@ -9,9 +9,11 @@
 
 namespace ClosetRpc.Net
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
+    using System.Net.Sockets;
     using System.Threading;
 
     using ClosetRpc.Net.Protocol;
@@ -21,6 +23,8 @@ namespace ClosetRpc.Net
         #region Fields
 
         private readonly IList<ServerContext> activeConnections = new List<ServerContext>();
+
+        private readonly Lazy<IProtocolObjectFactory> cachedFactory;
 
         private readonly GlobalObjectManager objectManager = new GlobalObjectManager();
 
@@ -37,7 +41,14 @@ namespace ClosetRpc.Net
         public Server(IServerTransport transport)
         {
             this.transport = transport;
+            this.cachedFactory = new Lazy<IProtocolObjectFactory>(this.CreateProtocolObjectFactory);
         }
+
+        #endregion
+
+        #region Properties
+
+        protected IProtocolObjectFactory ProtocolObjectFactory => this.cachedFactory.Value;
 
         #endregion
 
@@ -62,9 +73,28 @@ namespace ClosetRpc.Net
 
             while (this.isRunning)
             {
-                var context = new ServerContext(this.transport.Listen(), new Thread(this.ConnectionHandler));
-                this.activeConnections.Add(context);
-                context.Thread.Start(context);
+                Channel channel;
+                try
+                {
+                    channel = this.transport.Listen();
+                }
+                catch (SocketException)
+                {
+                    // Exception is unexpected while we are still running
+                    if (this.isRunning)
+                    {
+                        throw;
+                    }
+
+                    break;
+                }
+
+                if (channel != null)
+                {
+                    var context = new ServerContext(channel, new Thread(this.ConnectionHandler));
+                    this.activeConnections.Add(context);
+                    context.Thread.Start(context);
+                }
             }
 
             lock (this.stateLock)
@@ -97,7 +127,7 @@ namespace ClosetRpc.Net
 
         #region Methods
 
-        protected virtual IProtocolObjectFactory GetProtocolObjectFactory()
+        protected virtual IProtocolObjectFactory CreateProtocolObjectFactory()
         {
             return new ProtocolObjectFactory();
         }
@@ -156,12 +186,12 @@ namespace ClosetRpc.Net
 
         private void ProcessSingleMessage(ServerContext context, Stream stream)
         {
-            var protocolObjectFactory = this.GetProtocolObjectFactory();
+            var protocolObjectFactory = this.ProtocolObjectFactory;
 
             // Deserialize request
             var requestMessage = protocolObjectFactory.RpcMessageFromStream(stream);
 
-            IRpcCall callRequest = requestMessage.Call;
+            var callRequest = requestMessage.Call;
             var resultResponse = protocolObjectFactory.CreateRpcResult();
             if (callRequest != null)
             {
@@ -171,7 +201,10 @@ namespace ClosetRpc.Net
                 // Reply if necessary
                 if (!callRequest.IsAsync)
                 {
-                    protocolObjectFactory.WriteMessage(stream, requestMessage.RequestId, null, resultResponse);
+                    using (var ostream = new BufferedStream(stream, 2048))
+                    {
+                        protocolObjectFactory.WriteMessage(ostream, requestMessage.RequestId, null, resultResponse);
+                    }
                 }
             }
             else

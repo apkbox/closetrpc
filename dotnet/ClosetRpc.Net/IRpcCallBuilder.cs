@@ -1,23 +1,23 @@
 ﻿// --------------------------------------------------------------------------------
-// <copyright file="IRpcMessage.cs" company="Private">
+// <copyright file="IRpcCallBuilder.cs" company="Private">
 //   Copyright (c) Alex Kozlov.
 // </copyright>
 // <summary>
-//   Defines the IRpcMessage type.
+//   Defines the IRpcCallBuilder type.
 // </summary>
 // --------------------------------------------------------------------------------
 
 namespace ClosetRpc.Net
 {
-    public interface IRpcMessage
+    public interface IRpcCallBuilder
     {
         #region Public Properties
 
-        IRpcCall Call { get; }
+        byte[] CallData { get; set; }
 
-        uint RequestId { get; }
+        string MethodName { get; set; }
 
-        IRpcResult Result { get; }
+        string ServiceName { get; set; }
 
         #endregion
     }

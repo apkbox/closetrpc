@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransportTestClient", "dotn
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessagingTestServer", "dotnet\MessagingTestServer\MessagingTestServer.csproj", "{569FB7D8-6C4E-4751-B8FD-F12B4F0AD82B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessagingTestClient", "dotnet\MessagingTestClient\MessagingTestClient.csproj", "{0115DD04-2EC2-426D-B8ED-17A3DABD21B4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{569FB7D8-6C4E-4751-B8FD-F12B4F0AD82B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{569FB7D8-6C4E-4751-B8FD-F12B4F0AD82B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{569FB7D8-6C4E-4751-B8FD-F12B4F0AD82B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0115DD04-2EC2-426D-B8ED-17A3DABD21B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0115DD04-2EC2-426D-B8ED-17A3DABD21B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0115DD04-2EC2-426D-B8ED-17A3DABD21B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0115DD04-2EC2-426D-B8ED-17A3DABD21B4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

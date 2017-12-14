@@ -1,24 +1,16 @@
 ﻿// --------------------------------------------------------------------------------
-// <copyright file="IRpcMessage.cs" company="Private">
+// <copyright file="ChannelStatus.cs" company="Private">
 //   Copyright (c) Alex Kozlov.
 // </copyright>
 // <summary>
-//   Defines the IRpcMessage type.
+//   Defines the ChannelStatus type.
 // </summary>
 // --------------------------------------------------------------------------------
 
 namespace ClosetRpc.Net
 {
-    public interface IRpcMessage
+    public enum ChannelStatus
     {
-        #region Public Properties
-
-        IRpcCall Call { get; }
-
-        uint RequestId { get; }
-
-        IRpcResult Result { get; }
-
-        #endregion
+        Open
     }
 }

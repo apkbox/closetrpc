@@ -1,23 +1,21 @@
 ﻿// --------------------------------------------------------------------------------
-// <copyright file="IRpcMessage.cs" company="Private">
+// <copyright file="PendingCall.cs" company="Private">
 //   Copyright (c) Alex Kozlov.
 // </copyright>
 // <summary>
-//   Defines the IRpcMessage type.
+//   Defines the PendingCall type.
 // </summary>
 // --------------------------------------------------------------------------------
 
 namespace ClosetRpc.Net
 {
-    public interface IRpcMessage
+    internal class PendingCall
     {
         #region Public Properties
 
-        IRpcCall Call { get; }
+        public IRpcResult Result { get; set; }
 
-        uint RequestId { get; }
-
-        IRpcResult Result { get; }
+        public PendingCallStatus Status { get; set; }
 
         #endregion
     }

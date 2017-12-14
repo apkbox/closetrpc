@@ -1,23 +1,19 @@
 ﻿// --------------------------------------------------------------------------------
-// <copyright file="IRpcMessage.cs" company="Private">
+// <copyright file="IClientTransport.cs" company="Private">
 //   Copyright (c) Alex Kozlov.
 // </copyright>
 // <summary>
-//   Defines the IRpcMessage type.
+//   Defines the IClientTransport type.
 // </summary>
 // --------------------------------------------------------------------------------
 
 namespace ClosetRpc.Net
 {
-    public interface IRpcMessage
+    public interface IClientTransport
     {
-        #region Public Properties
+        #region Public Methods and Operators
 
-        IRpcCall Call { get; }
-
-        uint RequestId { get; }
-
-        IRpcResult Result { get; }
+        Channel Connect();
 
         #endregion
     }

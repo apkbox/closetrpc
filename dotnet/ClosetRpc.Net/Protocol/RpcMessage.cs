@@ -21,6 +21,8 @@ namespace ClosetRpc.Net.Protocol
 
         IRpcCall IRpcMessage.Call => this.Call;
 
+        IRpcResult IRpcMessage.Result => this.Result;
+
         #endregion
 
         #region Properties

@@ -24,6 +24,15 @@ namespace ClosetRpc.Net.Protocol
             this.Deserialize(reader);
         }
 
+        public RpcCall(RpcCallBuilder callBuilder)
+        {
+            this.IsAsync = callBuilder.IsAsync;
+            this.ServiceName = callBuilder.ServiceName;
+            this.MethodName = callBuilder.MethodName;
+            this.ObjectId = callBuilder.ObjectId;
+            this.CallData = callBuilder.CallData;
+        }
+
         #endregion
 
         #region Public Properties
@@ -36,8 +45,6 @@ namespace ClosetRpc.Net.Protocol
 
         public ulong ObjectId { get; private set; }
 
-        public uint RequestId { get; private set; }
-
         public string ServiceName { get; private set; }
 
         #endregion
@@ -46,20 +53,18 @@ namespace ClosetRpc.Net.Protocol
 
         public void Deserialize(BinaryReader reader)
         {
-            this.RequestId = reader.ReadUInt32();
+            this.IsAsync = (reader.ReadInt32() & 1) != 0;
             this.ServiceName = reader.ReadString();
             this.MethodName = reader.ReadString();
-            this.IsAsync = (reader.ReadInt32() & 1) != 0;
             this.ObjectId = reader.ReadUInt32();
             this.CallData = SerializationHelpers.ReadBytes(reader);
         }
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.Write((uint)this.RequestId);
+            writer.Write((uint)(this.IsAsync ? 1 : 0));
             SerializationHelpers.WriteStringSafe(writer, this.ServiceName);
             SerializationHelpers.WriteStringSafe(writer, this.MethodName);
-            writer.Write((uint)(this.IsAsync ? 1 : 0));
             writer.Write((uint)this.ObjectId);
             SerializationHelpers.WriteBytesSafe(writer, this.CallData);
         }

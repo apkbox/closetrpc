@@ -9,12 +9,18 @@
 
 namespace ClosetRpc.Net.Protocol
 {
+    using System.Diagnostics;
     using System.IO;
     using System.Text;
 
     internal class ProtocolObjectFactory : IProtocolObjectFactory
     {
         #region Public Methods and Operators
+
+        public IRpcCallBuilder CreateCallBuilder()
+        {
+            return new RpcCallBuilder();
+        }
 
         public IRpcCall CreateRpcCall()
         {
@@ -32,18 +38,21 @@ namespace ClosetRpc.Net.Protocol
             {
                 var message = new RpcMessage();
                 message.RequestId = reader.ReadUInt32();
+                Debug.Fail("See TODO");
+                // TODO: Do not fill call/result portion if not present on the stream
+                // as this makes it impossible distinguish event call from call result
                 message.Call = new RpcCall(reader);
                 message.Result = new RpcResult(reader);
                 return message;
             }
         }
 
-        public void WriteMessage(Stream stream, uint requestId, IRpcCall call, IRpcResult result)
+        public void WriteMessage(Stream stream, uint requestId, IRpcCallBuilder callBuilder, IRpcResult result)
         {
             using (var writer = new BinaryWriter(stream, Encoding.UTF8, true))
             {
                 writer.Write(requestId);
-                this.WriteCall(writer, (RpcCall)call);
+                this.WriteCall(writer, new RpcCall((RpcCallBuilder)callBuilder));
                 this.WriteResult(writer, (RpcResult)result);
             }
         }

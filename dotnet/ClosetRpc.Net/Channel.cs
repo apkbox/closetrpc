@@ -32,6 +32,14 @@ namespace ClosetRpc.Net
 
         #region Public Properties
 
+        public ChannelStatus Status
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         public Stream Stream => this.tcpClient.GetStream();
 
         #endregion
@@ -43,11 +51,11 @@ namespace ClosetRpc.Net
             this.tcpClient.Close();
         }
 
-        #endregion
-
         public void Dispose()
         {
             this.tcpClient?.Dispose();
         }
+
+        #endregion
     }
-} // namespace ClosetRpc.Net
+}

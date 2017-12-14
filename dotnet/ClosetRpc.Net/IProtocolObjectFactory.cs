@@ -15,11 +15,13 @@ namespace ClosetRpc.Net
     {
         #region Public Methods and Operators
 
+        IRpcCallBuilder CreateCallBuilder();
+
         IRpcResult CreateRpcResult();
 
         IRpcMessage RpcMessageFromStream(Stream stream);
 
-        void WriteMessage(Stream stream, uint requestId, IRpcCall call, IRpcResult result);
+        void WriteMessage(Stream stream, uint requestId, IRpcCallBuilder callBuilder, IRpcResult result);
 
         #endregion
     }

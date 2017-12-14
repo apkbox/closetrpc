@@ -9,6 +9,8 @@
 
 namespace MessagingTestServer
 {
+    using System;
+
     using ClosetRpc.Net;
 
     internal class PingPongService : IRpcService
@@ -23,7 +25,22 @@ namespace MessagingTestServer
 
         public void CallMethod(ServerContext context, IRpcCall rpcCall, IRpcResult result)
         {
-            throw new System.NotImplementedException();
+            if (rpcCall.MethodName == "Ping")
+            {
+                if (rpcCall.CallData == null || rpcCall.CallData.Length != 4)
+                {
+                    result.Status = RpcStatus.InvalidCallParameter;
+                    return;
+                }
+
+                var counter = BitConverter.ToInt32(rpcCall.CallData, 0);
+                ++counter;
+                result.ResultData = BitConverter.GetBytes(counter);
+            }
+            else
+            {
+                result.Status = RpcStatus.UnknownMethod;
+            }
         }
 
         #endregion

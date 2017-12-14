@@ -8,3 +8,5 @@
 /dotnet/TransportTestClient/obj/
 /dotnet/TransportTestServer/bin/
 /dotnet/TransportTestServer/obj/
+/dotnet/MessagingTestClient/bin/
+/dotnet/MessagingTestClient/obj/

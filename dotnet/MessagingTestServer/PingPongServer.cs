@@ -30,7 +30,7 @@ namespace MessagingTestServer
 
         public void Stop()
         {
-            this.server.Stop(true);
+            this.server.Stop(false);
         }
 
         #endregion

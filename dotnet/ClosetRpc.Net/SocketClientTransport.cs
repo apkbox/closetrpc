@@ -11,15 +11,13 @@ namespace ClosetRpc.Net
 {
     using System.Net.Sockets;
 
-    public class SocketClientTransport
+    public class SocketClientTransport : IClientTransport
     {
         #region Fields
 
         private readonly string hostname;
 
         private readonly int port;
-
-        private readonly TcpClient tcpClient = new TcpClient();
 
         #endregion
 
@@ -35,15 +33,11 @@ namespace ClosetRpc.Net
 
         #region Public Methods and Operators
 
-        public void Close()
-        {
-            this.tcpClient.Close();
-        }
-
         public Channel Connect()
         {
-            this.tcpClient.Connect(this.hostname, this.port);
-            return new Channel(this.tcpClient);
+            var tcpClient = new TcpClient();
+            tcpClient.Connect(this.hostname, this.port);
+            return new Channel(tcpClient);
         }
 
         #endregion
