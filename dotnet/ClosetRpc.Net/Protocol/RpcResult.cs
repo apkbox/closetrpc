@@ -7,7 +7,7 @@
 // </summary>
 // --------------------------------------------------------------------------------
 
-namespace ClosetRpc.Net
+namespace ClosetRpc.Net.Protocol
 {
     using System.IO;
 
@@ -15,9 +15,8 @@ namespace ClosetRpc.Net
     {
         #region Constructors and Destructors
 
-        public RpcResult(uint requestId)
+        public RpcResult()
         {
-            this.RequestId = requestId;
             this.Status = RpcStatus.Succeeded;
         }
 
@@ -30,8 +29,6 @@ namespace ClosetRpc.Net
 
         #region Public Properties
 
-        public uint RequestId { get; private set; }
-
         public byte[] ResultData { get; set; }
 
         public RpcStatus Status { get; set; }
@@ -42,27 +39,14 @@ namespace ClosetRpc.Net
 
         public void Deserialize(BinaryReader reader)
         {
-            this.RequestId = reader.ReadUInt32();
             this.Status = (RpcStatus)reader.ReadInt32();
-
-            var length = reader.ReadUInt32();
-            this.ResultData = reader.ReadBytes((int)length);
+            this.ResultData = SerializationHelpers.ReadBytes(reader);
         }
 
         public void Serialize(BinaryWriter writer)
         {
-            writer.Write((uint)this.RequestId);
             writer.Write((int)this.Status);
-
-            if (this.ResultData == null)
-            {
-                writer.Write((uint)0);
-            }
-            else
-            {
-                writer.Write((uint)this.ResultData.Length);
-                writer.Write(this.ResultData);
-            }
+            SerializationHelpers.WriteBytesSafe(writer, this.ResultData);
         }
 
         #endregion

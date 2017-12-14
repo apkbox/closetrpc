@@ -12,8 +12,9 @@ namespace ClosetRpc.Net
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
-    using System.Text;
     using System.Threading;
+
+    using ClosetRpc.Net.Protocol;
 
     public class Server
     {
@@ -96,6 +97,11 @@ namespace ClosetRpc.Net
 
         #region Methods
 
+        protected virtual IProtocolObjectFactory GetProtocolObjectFactory()
+        {
+            return new ProtocolObjectFactory();
+        }
+
         private void ConnectionHandler(object param)
         {
             var context = (ServerContext)param;
@@ -150,24 +156,27 @@ namespace ClosetRpc.Net
 
         private void ProcessSingleMessage(ServerContext context, Stream stream)
         {
+            var protocolObjectFactory = this.GetProtocolObjectFactory();
+
             // Deserialize request
-            RpcCall callRequest;
-            using (var reader = new BinaryReader(stream, Encoding.UTF8, true))
-            {
-                callRequest = new RpcCall(reader);
-            }
+            var requestMessage = protocolObjectFactory.RpcMessageFromStream(stream);
 
-            // Call service handler
-            var resultResponse = new RpcResult(callRequest.RequestId);
-            this.ProcessRequest(context, callRequest, resultResponse);
-
-            // Reply if necessary
-            if (!callRequest.IsAsync)
+            IRpcCall callRequest = requestMessage.Call;
+            var resultResponse = protocolObjectFactory.CreateRpcResult();
+            if (callRequest != null)
             {
-                using (var ostream = new BinaryWriter(new BufferedStream(stream, 2048), Encoding.UTF8, true))
+                // Call service handler
+                this.ProcessRequest(context, callRequest, resultResponse);
+
+                // Reply if necessary
+                if (!callRequest.IsAsync)
                 {
-                    resultResponse.Serialize(ostream);
+                    protocolObjectFactory.WriteMessage(stream, requestMessage.RequestId, null, resultResponse);
                 }
+            }
+            else
+            {
+                // TODO: Complain about protocol error
             }
         }
 
