@@ -9,7 +9,6 @@
 
 namespace ClosetRpc.Net.Protocol
 {
-    using System.Diagnostics;
     using System.IO;
     using System.Text;
 
@@ -43,10 +42,12 @@ namespace ClosetRpc.Net.Protocol
                 {
                     message.Call = new RpcCall(reader);
                 }
+
                 if ((contentFlags & 0x02) != 0)
                 {
                     message.Result = new RpcResult(reader);
                 }
+
                 return message;
             }
         }
@@ -56,44 +57,18 @@ namespace ClosetRpc.Net.Protocol
             using (var writer = new BinaryWriter(stream, Encoding.UTF8, true))
             {
                 writer.Write(requestId);
-                byte contentFlags = (byte)((callBuilder != null ? 0x01 : 0) | (result != null ? 0x02 : 0));
+                var contentFlags = (byte)((callBuilder != null ? 0x01 : 0) | (result != null ? 0x02 : 0));
                 writer.Write(contentFlags);
+
                 if (callBuilder != null)
                 {
                     new RpcCall((RpcCallBuilder)callBuilder).Serialize(writer);
                 }
+
                 if (result != null)
                 {
                     ((RpcResult)result).Serialize(writer);
                 }
-            }
-        }
-
-        #endregion
-
-        #region Methods
-
-        private void WriteCall(BinaryWriter writer, RpcCall call)
-        {
-            if (call == null)
-            {
-                writer.Write((uint)0);
-            }
-            else
-            {
-                call.Serialize(writer);
-            }
-        }
-
-        private void WriteResult(BinaryWriter writer, RpcResult result)
-        {
-            if (result == null)
-            {
-                writer.Write((uint)0);
-            }
-            else
-            {
-                result.Serialize(writer);
             }
         }
 

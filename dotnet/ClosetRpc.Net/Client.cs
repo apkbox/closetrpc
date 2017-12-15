@@ -37,7 +37,7 @@ namespace ClosetRpc.Net
 
         private uint lastRequestId;
 
-        private Thread lazyReceiverThread;
+        private Thread receiverThread;
 
         #endregion
 
@@ -51,15 +51,15 @@ namespace ClosetRpc.Net
 
         #endregion
 
-        #region Public Properties
+        #region Properties
 
-        public IProtocolObjectFactory ProtocolObjectFactory => this.cachedFactory.Value;
+        protected IProtocolObjectFactory ProtocolObjectFactory => this.cachedFactory.Value;
 
         #endregion
 
         #region Public Methods and Operators
 
-        public IRpcResult CallMethod(IRpcCallBuilder rpcCallBuilder)
+        public IRpcResult CallService(IRpcCallBuilder rpcCallBuilder)
         {
             uint requestId;
             lock (this.requestIdLock)
@@ -67,8 +67,8 @@ namespace ClosetRpc.Net
                 requestId = ++this.lastRequestId;
             }
 
-            this.SendCallRequest(requestId, rpcCallBuilder);
-            return this.WaitForResult(requestId);
+            this.SendRequest(requestId, rpcCallBuilder);
+            return this.AwaitResult(requestId);
         }
 
         public IRpcCallBuilder CreateCallBuilder()
@@ -78,6 +78,14 @@ namespace ClosetRpc.Net
 
         public void Shutdown()
         {
+            this.isRunning = false;
+            lock (this.pendingCallsLock)
+            {
+                Monitor.PulseAll(this.pendingCallsLock);
+            }
+
+            var thread = this.receiverThread;
+            thread?.Join();
         }
 
         #endregion
@@ -89,21 +97,51 @@ namespace ClosetRpc.Net
             return new ProtocolObjectFactory();
         }
 
-        private void EnsureReceiveThread()
+        private IRpcResult AwaitResult(uint requestId)
+        {
+            this.EnsureReceiverThread();
+
+            lock (this.pendingCallsLock)
+            {
+                this.pendingCalls[requestId].Status = PendingCallStatus.AwaitingResult;
+
+                while (true)
+                {
+                    if (this.pendingCalls.TryGetValue(requestId, out var pendingCall))
+                    {
+                        if (pendingCall.Status == PendingCallStatus.Received)
+                        {
+                            var result = pendingCall.Result;
+                            this.pendingCalls.Remove(requestId);
+                            return result;
+                        }
+                        else if (pendingCall.Status == PendingCallStatus.Cancelled)
+                        {
+                            this.pendingCalls.Remove(requestId);
+                            return null;
+                        }
+                    }
+
+                    Monitor.Wait(this.pendingCallsLock);
+                }
+            }
+        }
+
+        private void EnsureReceiverThread()
         {
             lock (this.receiveThreadInitLock)
             {
-                if (this.lazyReceiverThread != null)
+                if (this.receiverThread != null)
                 {
                     return;
                 }
 
-                this.lazyReceiverThread = new Thread(this.ReceiveThreadProc);
-                this.lazyReceiverThread.Start();
+                this.receiverThread = new Thread(this.ReceiverThread);
+                this.receiverThread.Start();
             }
         }
 
-        private bool HandleIncomingMessage()
+        private bool ProcessSingleMessage()
         {
             var message = this.ProtocolObjectFactory.RpcMessageFromStream(this.channel.Stream);
 
@@ -150,56 +188,34 @@ namespace ClosetRpc.Net
             return true;
         }
 
-        private void ReceiveThreadProc()
+        private void ReceiverThread()
         {
+            this.isRunning = true;
+
             // If channel disconnected - stop processing messages until it comes back.
             while (!this.isRunning)
             {
-                while (this.channel.Status == ChannelStatus.Open)
+                try
                 {
-                    this.HandleIncomingMessage();
+                    this.ProcessSingleMessage();
                 }
-
-                Thread.Sleep(300);
+                catch (Exception)
+                {
+                    Thread.Sleep(500);
+                }
             }
         }
 
-        private void SendCallRequest(uint requestId, IRpcCallBuilder callBuilder)
+        private void SendRequest(uint requestId, IRpcCallBuilder callBuilder)
         {
-            // TODO: Add to pendingCalls unless async
+            if (!callBuilder.IsAsync)
+            {
+                this.pendingCalls.Add(requestId, new PendingCall());
+            }
+
             using (var ostream = new BufferedStream(this.channel.Stream, 2048))
             {
                 this.ProtocolObjectFactory.WriteMessage(ostream, requestId, callBuilder, null);
-            }
-        }
-
-        private IRpcResult WaitForResult(uint requestId)
-        {
-            this.EnsureReceiveThread();
-
-            lock (this.pendingCallsLock)
-            {
-                this.pendingCalls[requestId].Status = PendingCallStatus.AwaitingResult;
-
-                while (true)
-                {
-                    if (this.pendingCalls.TryGetValue(requestId, out var pendingCall))
-                    {
-                        if (pendingCall.Status == PendingCallStatus.Received)
-                        {
-                            var result = pendingCall.Result;
-                            this.pendingCalls.Remove(requestId);
-                            return result;
-                        }
-                        else if (pendingCall.Status == PendingCallStatus.Cancelled)
-                        {
-                            this.pendingCalls.Remove(requestId);
-                            return null;
-                        }
-                    }
-
-                    Monitor.Wait(this.pendingCallsLock);
-                }
             }
         }
 

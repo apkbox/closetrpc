@@ -12,10 +12,23 @@ namespace ClosetRpc.Net
     using System;
     using System.IO;
     using System.Net.Sockets;
+    using System.Threading;
+
+    using Common.Logging;
 
     public class Channel : IDisposable
     {
+        #region Static Fields
+
+        private static int lastChannelId;
+
+        #endregion
+
         #region Fields
+
+        private readonly int channelId;
+
+        private readonly ILog log = LogManager.GetLogger<Channel>();
 
         private readonly TcpClient tcpClient;
 
@@ -25,6 +38,8 @@ namespace ClosetRpc.Net
 
         internal Channel(TcpClient tcpClient)
         {
+            this.channelId = Interlocked.Increment(ref Channel.lastChannelId);
+            this.log.DebugFormat("Created channel {0}", this.channelId);
             this.tcpClient = tcpClient;
         }
 
@@ -32,15 +47,17 @@ namespace ClosetRpc.Net
 
         #region Public Properties
 
-        public ChannelStatus Status
+        public Stream Stream
         {
             get
             {
-                throw new NotImplementedException();
+                this.log.TraceFormat(
+                    "Getting channel {0} stream. Connected={1}",
+                    this.channelId,
+                    this.tcpClient.Connected);
+                return this.tcpClient.GetStream();
             }
         }
-
-        public Stream Stream => this.tcpClient.GetStream();
 
         #endregion
 
@@ -48,11 +65,13 @@ namespace ClosetRpc.Net
 
         public void Close()
         {
+            this.log.DebugFormat("Closing channel {0}", this.channelId);
             this.tcpClient.Close();
         }
 
         public void Dispose()
         {
+            this.log.DebugFormat("Disposing channel {0}", this.channelId);
             this.tcpClient?.Dispose();
         }
 

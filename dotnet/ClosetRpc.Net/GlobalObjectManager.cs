@@ -40,6 +40,11 @@ namespace ClosetRpc.Net
 
         public void RegisterService(IRpcService service)
         {
+            if (service == null)
+            {
+                throw new ArgumentNullException(nameof(service));
+            }
+
             this.RegisterService(service, service.Name);
         }
 

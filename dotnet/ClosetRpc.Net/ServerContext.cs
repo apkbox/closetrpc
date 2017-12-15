@@ -19,6 +19,7 @@ namespace ClosetRpc.Net
         public ServerContext(Channel channel, Thread thread)
         {
             this.Channel = channel;
+            this.Thread = thread;
             this.ObjectManager = new ObjectManager();
         }
 
@@ -28,7 +29,7 @@ namespace ClosetRpc.Net
 
         public Channel Channel { get; set; }
 
-        public ObjectManager ObjectManager { get; private set; }
+        public ObjectManager ObjectManager { get; }
 
         public Thread Thread { get; set; }
 

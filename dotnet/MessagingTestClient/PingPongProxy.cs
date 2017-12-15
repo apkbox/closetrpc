@@ -38,7 +38,7 @@ namespace MessagingTestClient
             callBuilder.ServiceName = "IPingPong";
             callBuilder.MethodName = "Ping";
             callBuilder.CallData = BitConverter.GetBytes(value);
-            var result = this.client.CallMethod(callBuilder);
+            var result = this.client.CallService(callBuilder);
             if (result.Status != RpcStatus.Succeeded)
             {
                 throw new ApplicationException();

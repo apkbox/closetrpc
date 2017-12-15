@@ -38,7 +38,7 @@ namespace ClosetRpc.Net.Protocol
         {
             if (string.IsNullOrEmpty(str))
             {
-                writer.Write((uint)0);
+                writer.Write((byte)0);
             }
             else
             {

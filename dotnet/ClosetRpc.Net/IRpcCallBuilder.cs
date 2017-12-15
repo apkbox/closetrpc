@@ -15,7 +15,11 @@ namespace ClosetRpc.Net
 
         byte[] CallData { get; set; }
 
+        bool IsAsync { get; set; }
+
         string MethodName { get; set; }
+
+        ulong ObjectId { get; set; }
 
         string ServiceName { get; set; }
 
