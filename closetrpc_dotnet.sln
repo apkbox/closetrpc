@@ -23,6 +23,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Readme.md = Readme.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClosetRpc.Net.Protobuf", "dotnet\ClosetRpc.Net.Protobuf\ClosetRpc.Net.Protobuf.csproj", "{569CB9B5-11E8-43C5-918A-B1F06B8E777D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeGenerationTemplate", "dotnet\CodeGenerationTemplate\CodeGenerationTemplate.csproj", "{3A08C3EC-4FC1-427A-B1D6-E20C694437AB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +57,14 @@ Global
 		{DDBCA085-1183-4ADE-9C16-C06797A38ABD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DDBCA085-1183-4ADE-9C16-C06797A38ABD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DDBCA085-1183-4ADE-9C16-C06797A38ABD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{569CB9B5-11E8-43C5-918A-B1F06B8E777D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{569CB9B5-11E8-43C5-918A-B1F06B8E777D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{569CB9B5-11E8-43C5-918A-B1F06B8E777D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{569CB9B5-11E8-43C5-918A-B1F06B8E777D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A08C3EC-4FC1-427A-B1D6-E20C694437AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A08C3EC-4FC1-427A-B1D6-E20C694437AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A08C3EC-4FC1-427A-B1D6-E20C694437AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A08C3EC-4FC1-427A-B1D6-E20C694437AB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+option csharp_namespace = "ClosetRpc";
+
+// import "google/protobuf/wrappers.proto";
+import "google/protobuf/descriptor.proto";
+
+package nanorpc;
+
+extend google.protobuf.MessageOptions {
+	// Specifies that message is a method argument list.
+	bool expand_as_arguments = 90001;
+
+	// Specifies that the message is an enumeration wrapper.
+	bool enum_wrapper = 90002;
+}
+
+// extend google.protobuf.FieldOptions {
+// }
+
+extend google.protobuf.ServiceOptions {
+	// Specifies that the service is an event source (implemented on client).
+	bool event_source = 90301;
+}
+
+extend google.protobuf.MethodOptions {
+	// Specifies that the method is actually a description of property.
+	bool is_property = 90401;
+
+	// Specifies that the method is asynchronous.
+	bool async = 90402;
+}
+
+message WideStringValue {
+	string value = 1;
+}
+
+message SInt32Value {
+	sint32 value = 1;
+}
+
+message SInt64Value {
+	sint64 value = 1;
+}
+
+message RpcObject {
+	uint64 object_id = 1;
+}

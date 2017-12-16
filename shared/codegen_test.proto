@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "closetrpc_types.proto";
+
+package codegen_test;
+
+enum EnumType {
+	EnumValue0 = 0;
+	EnumValue1 = 1;
+	EnumValue2 = 2;
+	EnumValue3 = 3;
+	EnumValue4 = 4;
+}
+
+message StructType {
+	bool bool_value = 1;
+	int32 int32_value = 2;
+	uint32 uint32_value = 3;
+	int64 int64_value = 4;
+	uint64 uint64_value = 5;
+	sint32 sint32_value = 6;
+	sint64 sint64_value = 7;
+	float float_value = 8;
+	double double_value = 9;
+	EnumType enum_value = 10;
+	string string_value = 11;
+}
+
+service TestService {
+	rpc Method_V_V (google.protobuf.Empty) returns (google.protobuf.Empty);
+
+	rpc Method_V_M (StructType) returns (google.protobuf.Empty);
+
+	rpc Method_M_V (google.protobuf.Empty) returns (StructType);
+
+	rpc Method_M_M (StructType) returns (StructType);
+
+	rpc AsyncMethod_V_V (google.protobuf.Empty) returns (google.protobuf.Empty) {
+		option (nanorpc.async) = true;
+	}
+
+	rpc AsyncMethod_V_M (StructType) returns (google.protobuf.Empty) {
+		option (nanorpc.async) = true;
+	}
+}
