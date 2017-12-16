@@ -41,6 +41,7 @@ TODO:
   To handle p2p transports make transport to return maximum number of
   connections it can satisfy - [1..Inf]. This will fit perfectly into server
   provided restriction on numer of connections like below:
+```c++
     while (true) {
       if (n_conn < min(transport.max_conn(), server.max_conn())) {
         /* connect */
@@ -50,6 +51,7 @@ TODO:
         /* refuse connection */
       }
     }
+```
 
 OTHER THOUGHTS:
 * object_id_value and event_name fields included into RpcParameter apparently
@@ -60,6 +62,8 @@ OTHER THOUGHTS:
 * Not sure why is_null was needed. Does not seem used anywhere.
 
 * With proto3 Any type is better suited to store a parameter.
+  * This is irrelevant for closet-rpc because it uses protobuf independent
+    serialization for control messages.
 
 * When exception happen on the server while handling service call the following
   strategies can be used:
@@ -69,6 +73,11 @@ OTHER THOUGHTS:
   * Let exception handled through client callback (one for all services.)
   * Combine both approaches - let service handle if first and then invoke a
     global handler if not.
+
+* Once connection established, give the server's user code a chance to handle
+  messages on a separate service stack, which then indicates whether
+  the connection can proceed or should be aborted. This can serve as a plug in
+  point for custom authorization/authentication or version checking.
 
 ## Extracted from source code
 ### client.cpp::FlushPendingCalls
