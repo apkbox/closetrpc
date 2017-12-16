@@ -13,3 +13,4 @@
 /dotnet/ClosetRpc.Test/bin/
 /dotnet/ClosetRpc.Test/obj/
 /packages/
+*.user

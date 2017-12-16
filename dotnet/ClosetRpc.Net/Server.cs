@@ -24,7 +24,9 @@ namespace ClosetRpc.Net
     {
         #region Fields
 
-        private readonly IList<ServerContext> activeConnections = new List<ServerContext>();
+        private readonly List<ServerContext> activeConnections = new List<ServerContext>();
+
+        private readonly object activeConnectionsLock = new object();
 
         private readonly Lazy<IProtocolObjectFactory> cachedFactory;
 
@@ -45,7 +47,9 @@ namespace ClosetRpc.Net
         public Server(IServerTransport transport)
         {
             this.transport = transport;
-            this.cachedFactory = new Lazy<IProtocolObjectFactory>(this.CreateProtocolObjectFactory);
+            this.cachedFactory = new Lazy<IProtocolObjectFactory>(
+                this.CreateProtocolObjectFactory,
+                LazyThreadSafetyMode.ExecutionAndPublication);
         }
 
         #endregion
@@ -81,6 +85,11 @@ namespace ClosetRpc.Net
             this.log.Info("Running...");
             lock (this.stateLock)
             {
+                // TODO: Problem here is that when Shutdown is called, it is,
+                // while holding stateLock sets isRunning to false.
+                // Now if Run was just called, and waiting for stateLock,
+                // once shutdown complete, Run will set isRunning true again
+                // and when attempt to use socket throw an exception.
                 this.isRunning = true;
             }
 
@@ -108,18 +117,30 @@ namespace ClosetRpc.Net
                 if (channel != null)
                 {
                     this.log.Debug("Creating connection context and thread.");
-                    var context = new ServerContext(channel, new Thread(this.ConnectionHandler));
-                    this.activeConnections.Add(context);
+                    var context = new ServerContext(channel, new Thread(this.ConnectionThread));
+                    lock (this.activeConnectionsLock)
+                    {
+                        this.activeConnections.Add(context);
+                    }
+
                     context.Thread.Start(context);
                 }
             }
 
             lock (this.stateLock)
             {
-                foreach (var connection in this.activeConnections)
+                lock (this.activeConnectionsLock)
                 {
-                    connection.Channel.Close();
-                    connection.Thread.Join();
+                    foreach (var connection in this.activeConnections)
+                    {
+                        connection.Channel.Close();
+
+                        // TODO: This is a deadlock situation as the connection
+                        // thread will stuck waiting for the lock when terminating
+                        // to remove itself from list of active connections.
+
+                        // connection.Thread.Join();
+                    }
                 }
 
                 this.isRunning = false;
@@ -129,6 +150,12 @@ namespace ClosetRpc.Net
             this.log.Info("Stopped.");
         }
 
+        /// <summary>
+        /// Shutdown the server, optionally waiting for all pending requests to complete.
+        /// </summary>
+        /// <param name="waitForCompletion">
+        /// When true, wait for all pending requests to complete.
+        /// </param>
         public void Shutdown(bool waitForCompletion)
         {
             this.log.InfoFormat("Shutdown requested (wait={0}).", waitForCompletion);
@@ -153,20 +180,33 @@ namespace ClosetRpc.Net
             return new ProtocolObjectFactory();
         }
 
-        private void ConnectionHandler(object param)
+        private void ConnectionThread(object param)
         {
             var context = (ServerContext)param;
             this.log.DebugFormat("Connection established. Thread={0}", context.Thread.ManagedThreadId);
             while (this.isRunning)
             {
-                this.ProcessSingleMessage(context, context.Channel.Stream);
+                try
+                {
+                    this.ProcessSingleMessage(context, context.Channel.Stream);
+                }
+                catch (IOException ex)
+                {
+                    this.log.Error("Exception while processing message.", ex);
+                    break;
+                }
             }
+
+            lock (this.activeConnectionsLock)
+            {
+                this.activeConnections.Remove(context);
+            }
+
+            this.log.DebugFormat("Connection terminated. Thread={0}", context.Thread.ManagedThreadId);
         }
 
         private void ExecuteRequest(ServerContext context, IRpcCall call, IRpcResult result)
         {
-            this.log.TraceFormat("Executing request '{0}.{1}'", call.ServiceName, call.MethodName);
-
             IRpcServiceStub service;
 
             // Check whether the called method is for service or transient object.
@@ -177,12 +217,6 @@ namespace ClosetRpc.Net
             // controlled by the client.
             if (call.ObjectId != 0)
             {
-                this.log.TraceFormat(
-                    "Looking for context specific object '{0}' with '{1}.{2}' interface.",
-                    call.ObjectId,
-                    call.ServiceName,
-                    call.MethodName);
-
                 // Try to find object that corresponds to the marshalled interface.
                 service = context.ObjectManager.GetInstance(call.ObjectId);
                 if (service == null)
@@ -197,20 +231,10 @@ namespace ClosetRpc.Net
             }
             else
             {
-                this.log.TraceFormat(
-                    "Trying to resolve service '{0}.{1}' from global registry.",
-                    call.ServiceName,
-                    call.MethodName);
-
                 // Try to find service in global scope and then within connection context.
                 service = this.objectManager.GetService(call.ServiceName);
                 if (service == null)
                 {
-                    this.log.TraceFormat(
-                        "Trying to resolve service '{0}.{1}' from local registry.",
-                        call.ServiceName,
-                        call.MethodName);
-
                     service = context.ObjectManager.GetService(call.ServiceName);
                     if (service == null)
                     {
@@ -242,6 +266,7 @@ namespace ClosetRpc.Net
 
             // Deserialize request
             var requestMessage = protocolObjectFactory.RpcMessageFromStream(stream);
+            this.log.TraceFormat("Received message {0}.", requestMessage.RequestId);
             if (requestMessage.Call == null)
             {
                 this.log.Error("No call in the request.");
@@ -257,15 +282,17 @@ namespace ClosetRpc.Net
             var resultResponse = protocolObjectFactory.CreateRpcResult();
 
             // Call service handler
+            // TODO: Intercept exceptions that happened during execution
+            // and deal with them separately. The most important reason is that
+            // if service happen to throw IOException or SocketException these
+            // are not misinterpreted as related to RPC communication.
             this.ExecuteRequest(context, callRequest, resultResponse);
 
             // Reply if necessary
             if (!callRequest.IsAsync)
             {
-                using (var ostream = new BufferedStream(stream, 2048))
-                {
-                    protocolObjectFactory.WriteMessage(ostream, requestMessage.RequestId, null, resultResponse);
-                }
+                protocolObjectFactory.WriteMessage(stream, requestMessage.RequestId, null, resultResponse);
+                this.log.TraceFormat("Sent reply {0}.", requestMessage.RequestId);
             }
         }
 

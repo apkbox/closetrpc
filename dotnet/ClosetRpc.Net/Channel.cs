@@ -51,10 +51,6 @@ namespace ClosetRpc.Net
         {
             get
             {
-                this.log.TraceFormat(
-                    "Getting channel {0} stream. Connected={1}",
-                    this.channelId,
-                    this.tcpClient.Connected);
                 return this.tcpClient.GetStream();
             }
         }

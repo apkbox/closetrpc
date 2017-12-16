@@ -17,6 +17,8 @@ namespace ClosetRpc.Net
 
     using ClosetRpc.Net.Protocol;
 
+    using Common.Logging;
+
     public class Client
     {
         #region Fields
@@ -24,6 +26,8 @@ namespace ClosetRpc.Net
         private readonly Lazy<IProtocolObjectFactory> cachedFactory;
 
         private readonly Channel channel;
+
+        private readonly ILog log = LogManager.GetLogger<Client>();
 
         private readonly Dictionary<uint, PendingCall> pendingCalls = new Dictionary<uint, PendingCall>();
 
@@ -45,6 +49,7 @@ namespace ClosetRpc.Net
 
         public Client(IClientTransport transport)
         {
+            this.log.Debug("Client created.");
             this.channel = transport.Connect();
             this.cachedFactory = new Lazy<IProtocolObjectFactory>(this.CreateProtocolObjectFactory);
         }
@@ -59,6 +64,25 @@ namespace ClosetRpc.Net
 
         #region Public Methods and Operators
 
+        /// <summary>
+        /// Sends request to the server.
+        /// </summary>
+        /// <param name="rpcCallBuilder">Call parameters.</param>
+        /// <returns>
+        /// <para>
+        /// Returns <see cref="RpcStatus.Succeeded"/> on success or error status
+        /// on failure.
+        /// </para>
+        /// <para>
+        /// Asynchronous call success indicates that request was sent successfully
+        /// and <see cref="IRpcResult.ResultData"/> is unfilled.
+        /// </para>
+        /// <para>
+        /// Synchronous call success indicates that the request was sent and reply
+        /// received successfully and <see cref="IRpcResult.ResultData"/> contains
+        /// received response.
+        /// </para>
+        /// </returns>
         public IRpcResult CallService(IRpcCallBuilder rpcCallBuilder)
         {
             uint requestId;
@@ -67,8 +91,27 @@ namespace ClosetRpc.Net
                 requestId = ++this.lastRequestId;
             }
 
-            this.SendRequest(requestId, rpcCallBuilder);
-            return this.AwaitResult(requestId);
+            IRpcResult result;
+            if (rpcCallBuilder.IsAsync)
+            {
+                result = this.SendAsyncRequest(requestId, rpcCallBuilder);
+            }
+            else
+            {
+                result = this.SendSyncRequest(requestId, rpcCallBuilder);
+                if (result == null)
+                {
+                    return this.AwaitResult(requestId);
+                }
+            }
+
+            if (result == null)
+            {
+                result = this.ProtocolObjectFactory.CreateRpcResult();
+                result.Status = RpcStatus.Succeeded;
+            }
+
+            return result;
         }
 
         public IRpcCallBuilder CreateCallBuilder()
@@ -76,16 +119,39 @@ namespace ClosetRpc.Net
             return this.ProtocolObjectFactory.CreateCallBuilder();
         }
 
-        public void Shutdown()
+        /// <summary>
+        /// Shutdowns the client, optionally waiting for all pending requests to complete.
+        /// </summary>
+        /// <param name="waitForCompletion">
+        /// When true, wait for all pending requests to complete.
+        /// </param>
+        /// <remarks>
+        /// This method can be called from any thread.
+        /// If <paramref name="waitForCompletion"/> is true, then method blocks
+        /// until all outstanding requests complete.
+        /// All requests made after this method is called will fail.
+        /// Incoming events will be ignored and those pending in the queue
+        /// will be discarded.
+        /// </remarks>
+        public void Shutdown(bool waitForCompletion)
         {
+            if (waitForCompletion)
+            {
+                throw new NotImplementedException();
+            }
+
             this.isRunning = false;
+            this.channel.Close();
             lock (this.pendingCallsLock)
             {
                 Monitor.PulseAll(this.pendingCallsLock);
             }
 
-            var thread = this.receiverThread;
-            thread?.Join();
+            lock (this.receiveThreadInitLock)
+            {
+                this.receiverThread?.Join();
+                this.receiverThread = null;
+            }
         }
 
         #endregion
@@ -97,28 +163,38 @@ namespace ClosetRpc.Net
             return new ProtocolObjectFactory();
         }
 
+        private void AbortPendingCalls(RpcStatus reason)
+        {
+            Debug.Assert(Monitor.IsEntered(this.pendingCallsLock), "Pending calls lock must be held.");
+
+            foreach (var pendingCall in this.pendingCalls)
+            {
+                if (pendingCall.Value.Result == null)
+                {
+                    pendingCall.Value.Result = this.ProtocolObjectFactory.CreateRpcResult();
+                }
+
+                pendingCall.Value.Result.Status = reason;
+                pendingCall.Value.Status = PendingCallStatus.Cancelled;
+            }
+        }
+
         private IRpcResult AwaitResult(uint requestId)
         {
             this.EnsureReceiverThread();
 
             lock (this.pendingCallsLock)
             {
-                this.pendingCalls[requestId].Status = PendingCallStatus.AwaitingResult;
-
                 while (true)
                 {
                     if (this.pendingCalls.TryGetValue(requestId, out var pendingCall))
                     {
-                        if (pendingCall.Status == PendingCallStatus.Received)
+                        if (pendingCall.Status == PendingCallStatus.Received
+                            || pendingCall.Status == PendingCallStatus.Cancelled)
                         {
                             var result = pendingCall.Result;
                             this.pendingCalls.Remove(requestId);
                             return result;
-                        }
-                        else if (pendingCall.Status == PendingCallStatus.Cancelled)
-                        {
-                            this.pendingCalls.Remove(requestId);
-                            return null;
                         }
                     }
 
@@ -127,6 +203,9 @@ namespace ClosetRpc.Net
             }
         }
 
+        /// <summary>
+        /// Lazily creates a message receiver thread.
+        /// </summary>
         private void EnsureReceiverThread()
         {
             lock (this.receiveThreadInitLock)
@@ -141,41 +220,34 @@ namespace ClosetRpc.Net
             }
         }
 
-        private bool ProcessSingleMessage()
+        private void ReceiveAndHandleSingleMessage()
         {
             var message = this.ProtocolObjectFactory.RpcMessageFromStream(this.channel.Stream);
+            this.log.TraceFormat("Received message {0}.", message.RequestId);
 
             // If call portion of the message is filled, then it is an event.
             if (message.Call != null)
             {
                 // Check first if anyone expects the event
-                Debug.Fail("Not yet implemented");
+                throw new NotImplementedException();
 
-                /*
-                                // Check first if anyone expects the event
-                                auto event_service = event_service_manager_.GetService(response->call().service());
-                                if (event_service != nullptr) {
-                                  std::lock_guard<std::mutex> lock(event_queue_mtx_);
-                                  // TODO: Implement queue size limiting. Drop the oldest events.
-                                  // BUG: Although it looks smart to cache the handler
-                                  // pointer to avoid extra lookup it is a bad move.
-                                  // Between time we received event and user called
-                                  // PumpEvent, the other thread coild have called StopListening
-                                  // so, the pointer to the service will be invalid.
-                                  // On the other hand StopListening should reliably remove
-                                  // events that are not being listened.
-                                  event_queue_.emplace_back(event_service, std::move(response));
-                                  event_pending_cv_.notify_all();
-                                }
-                                 */
+                // Check first if anyone expects the event
+                // var eventService = eventServiceManager.GetService(message.Call.ServiceName);
+                // if (eventService != null) {
+                // lock(this.eventQueueLock) {
+                // eventQueue.Add(new PendingEvent(eventService, response));
+                // Monitor.PulseAll(eventQueueLock);
+                // }
+                // }
             }
-            else
+            else if (message.Result != null)
             {
                 lock (this.pendingCallsLock)
                 {
                     if (!this.pendingCalls.TryGetValue(message.RequestId, out var pendingCall))
                     {
-                        return false;
+                        this.log.WarnFormat("Pending message {0} not found. Message ignored.", message.RequestId);
+                        return;
                     }
 
                     pendingCall.Result = message.Result;
@@ -184,39 +256,124 @@ namespace ClosetRpc.Net
                     Monitor.PulseAll(this.pendingCallsLock);
                 }
             }
-
-            return true;
+            else
+            {
+                this.log.WarnFormat("Message {0} contains neither call nor reply.", message.RequestId);
+            }
         }
 
         private void ReceiverThread()
         {
             this.isRunning = true;
+            this.log.Debug("Receiver thread started.");
 
             // If channel disconnected - stop processing messages until it comes back.
-            while (!this.isRunning)
+            while (this.isRunning)
             {
                 try
                 {
-                    this.ProcessSingleMessage();
+                    this.ReceiveAndHandleSingleMessage();
                 }
-                catch (Exception)
+                catch (IOException ex)
                 {
+                    this.log.Debug("Exception in receiver thread. Disconnected?", ex);
+                    lock (this.pendingCallsLock)
+                    {
+                        this.AbortPendingCalls(RpcStatus.ChannelFailure);
+                        Monitor.PulseAll(this.pendingCallsLock);
+                    }
+
                     Thread.Sleep(500);
                 }
             }
+
+            this.log.Debug("Receiver thread exited.");
         }
 
-        private void SendRequest(uint requestId, IRpcCallBuilder callBuilder)
+        /// <summary>
+        /// Sends asynchronous request to the server.
+        /// </summary>
+        /// <param name="requestId">Request ID.</param>
+        /// <param name="callBuilder">Call parameters.</param>
+        /// <returns>
+        /// Returns <c>null</c> on success or result containing error status
+        /// on failure.
+        /// </returns>
+        private IRpcResult SendAsyncRequest(uint requestId, IRpcCallBuilder callBuilder)
         {
             if (!callBuilder.IsAsync)
             {
-                this.pendingCalls.Add(requestId, new PendingCall());
+                throw new InvalidOperationException("Call is not asychronous.");
             }
 
-            using (var ostream = new BufferedStream(this.channel.Stream, 2048))
+            IRpcResult result = null;
+            try
             {
-                this.ProtocolObjectFactory.WriteMessage(ostream, requestId, callBuilder, null);
+                this.ProtocolObjectFactory.WriteMessage(this.channel.Stream, requestId, callBuilder, null);
+                this.log.TraceFormat("Asynchronous message sent {0}.", requestId);
             }
+            catch (IOException ex)
+            {
+                this.log.DebugFormat("Exception while sending a message {0}. Disconnected?", ex, requestId);
+                result = this.ProtocolObjectFactory.CreateRpcResult();
+                result.Status = RpcStatus.ChannelFailure;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Sends specified request to the server.
+        /// </summary>
+        /// <param name="requestId">Request ID.</param>
+        /// <param name="callBuilder">Call parameters.</param>
+        /// <returns>
+        /// Returns <c>null</c> on success or result containing error status
+        /// on failure.
+        /// </returns>
+        private IRpcResult SendSyncRequest(uint requestId, IRpcCallBuilder callBuilder)
+        {
+            if (callBuilder.IsAsync)
+            {
+                throw new InvalidOperationException("Call must be synchronous.");
+            }
+
+            lock (this.pendingCallsLock)
+            {
+                this.pendingCalls.Add(requestId, new PendingCall());
+                this.log.TraceFormat("Message {0} pending reply.", requestId);
+            }
+
+            IRpcResult result = null;
+
+            try
+            {
+                this.ProtocolObjectFactory.WriteMessage(this.channel.Stream, requestId, callBuilder, null);
+                this.log.TraceFormat("Message sent {0}.", requestId);
+            }
+            catch (IOException ex)
+            {
+                this.log.Debug("Exception while sending a message. Disconnected?", ex);
+                lock (this.pendingCallsLock)
+                {
+                    if (!this.pendingCalls.ContainsKey(requestId))
+                    {
+                        this.log.ErrorFormat("Failed to find pending call {0}.", requestId);
+
+                        // TODO: This is really an internal error, so use other status.
+                        throw new RpcException(RpcStatus.ChannelFailure);
+                    }
+                    else
+                    {
+                        this.pendingCalls.Remove(requestId);
+                    }
+                }
+
+                result = this.ProtocolObjectFactory.CreateRpcResult();
+                result.Status = RpcStatus.ChannelFailure;
+            }
+
+            return result;
         }
 
         #endregion

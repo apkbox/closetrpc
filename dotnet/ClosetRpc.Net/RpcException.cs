@@ -1,30 +1,34 @@
 ﻿// --------------------------------------------------------------------------------
-// <copyright file="PendingCall.cs" company="Private">
+// <copyright file="RpcException.cs" company="Private">
 //   Copyright (c) Alex Kozlov.
 // </copyright>
 // <summary>
-//   Defines the PendingCall type.
+//   Defines the RpcException type.
 // </summary>
 // --------------------------------------------------------------------------------
 
 namespace ClosetRpc.Net
 {
-    internal class PendingCall
+    using System;
+
+    public class RpcException : Exception
     {
         #region Constructors and Destructors
 
-        public PendingCall()
+        public RpcException()
         {
-            this.Status = PendingCallStatus.AwaitingResult;
+        }
+
+        public RpcException(RpcStatus reason)
+        {
+            this.RpcStatus = reason;
         }
 
         #endregion
 
         #region Public Properties
 
-        public IRpcResult Result { get; set; }
-
-        public PendingCallStatus Status { get; set; }
+        public RpcStatus RpcStatus { get; set; }
 
         #endregion
     }

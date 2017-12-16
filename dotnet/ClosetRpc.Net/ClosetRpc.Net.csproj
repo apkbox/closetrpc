@@ -71,6 +71,7 @@
     <Compile Include="Protocol\RpcMessage.cs" />
     <Compile Include="Protocol\RpcResult.cs" />
     <Compile Include="Protocol\SerializationHelpers.cs" />
+    <Compile Include="RpcException.cs" />
     <Compile Include="RpcStatus.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="ServerContext.cs" />

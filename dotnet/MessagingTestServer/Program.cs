@@ -11,22 +11,54 @@ namespace MessagingTestServer
 {
     using System;
 
-    class Program
+    using ClosetRpc.Net;
+
+    using Common.Logging;
+
+    public class Program
     {
-        private static PingPongServer server;
+        #region Fields
+
+        private readonly ILog log = LogManager.GetLogger<Program>();
+
+        private Server server;
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        public static void Main(string[] args)
+        {
+            new Program().Run();
+        }
+
+        #endregion
 
         #region Methods
 
-        static void Main(string[] args)
+        private void ConsoleOnCancelKeyPress(object sender, ConsoleCancelEventArgs consoleCancelEventArgs)
         {
-            Console.CancelKeyPress += ConsoleOnCancelKeyPress;
-            Program.server = new PingPongServer();
-            server.Run();
+            this.log.Info("Ctrl+C pressed - shutting down...");
+            Console.WriteLine("Ctrl+C pressed - shutting down...");
+            this.server.Shutdown(true);
+            if (consoleCancelEventArgs.SpecialKey == ConsoleSpecialKey.ControlC)
+            {
+                consoleCancelEventArgs.Cancel = true;
+            }
         }
 
-        private static void ConsoleOnCancelKeyPress(object sender, ConsoleCancelEventArgs consoleCancelEventArgs)
+        private void Run()
         {
-            Program.server.Stop();
+            this.log.Info("Application started.");
+            Console.WriteLine("Application started.");
+            Console.CancelKeyPress += this.ConsoleOnCancelKeyPress;
+
+            this.server = new Server(new SocketServerTransport(3101));
+            this.server.RegisterService(new PingPongService());
+            this.server.Run();
+
+            Console.WriteLine("Application exited.");
+            this.log.Info("Application exited.");
         }
 
         #endregion

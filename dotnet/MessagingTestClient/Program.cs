@@ -15,11 +15,15 @@ namespace MessagingTestClient
 
     using ClosetRpc.Net;
 
+    using Common.Logging;
+
     public class Program
     {
-        #region Static Fields
+        #region Fields
 
-        private static bool isRunning;
+        private readonly ILog log = LogManager.GetLogger<Program>();
+
+        private bool isRunning;
 
         #endregion
 
@@ -27,22 +31,76 @@ namespace MessagingTestClient
 
         public static void Main(string[] args)
         {
-            Program.isRunning = true;
-            Console.CancelKeyPress += Program.ConsoleOnCancelKeyPress;
+            new Program().Run();
+        }
+
+        #endregion
+
+        #region Methods
+
+        private void ConsoleOnCancelKeyPress(object sender, ConsoleCancelEventArgs consoleCancelEventArgs)
+        {
+            this.log.Info("Ctrl+C pressed - shutting down...");
+            Console.WriteLine("Ctrl+C pressed - shutting down...");
+            this.isRunning = false;
+            if (consoleCancelEventArgs.SpecialKey == ConsoleSpecialKey.ControlC)
+            {
+                consoleCancelEventArgs.Cancel = true;
+            }
+        }
+
+        private void Run()
+        {
+            this.log.Info("Application started.");
+            Console.WriteLine("Application started.");
+            this.isRunning = true;
+
+            Console.CancelKeyPress += this.ConsoleOnCancelKeyPress;
+
             var transport = new SocketClientTransport("localhost", 3101);
+
             Client client = null;
-            while (Program.isRunning)
+            while (this.isRunning)
             {
                 try
                 {
-                    Console.WriteLine("Trying to connect...");
+                    var succeeded = true;
+                    this.log.Info("Connecting...");
                     client = new Client(transport);
+
+                    this.log.Info("Connected. Sending messages...");
                     var pingPong = new PingPongProxy(client);
 
-                    for (var i = 0; i < 100000; i++)
+                    for (var i = 0; i < 10000; i++)
                     {
-                        Console.Write("{0}.{1}   ", i, pingPong.Ping(i));
+                        try
+                        {
+                            var result = pingPong.Ping(i);
+                            Console.Write("{0}.{1}          \r", i, result);
+                        }
+                        catch (RpcException ex)
+                        {
+                            succeeded = false;
+                            if (ex.RpcStatus == RpcStatus.ChannelFailure)
+                            {
+                                this.log.Error("Connection lost.");
+                                break;
+                            }
+                        }
                     }
+
+                    if (succeeded)
+                    {
+                        this.log.Info("All messages sent. Shutting down...");
+                        this.isRunning = false;
+                    }
+                    else
+                    {
+                        this.log.Info("Shutting down and retrying after an error.");
+                    }
+
+                    client?.Shutdown(false);
+                    client = null;
                 }
                 catch (SocketException ex)
                 {
@@ -54,16 +112,8 @@ namespace MessagingTestClient
                 }
             }
 
-            client?.Shutdown();
-        }
-
-        #endregion
-
-        #region Methods
-
-        private static void ConsoleOnCancelKeyPress(object sender, ConsoleCancelEventArgs consoleCancelEventArgs)
-        {
-            Program.isRunning = false;
+            Console.WriteLine("Application exited.");
+            this.log.Info("Application exited.");
         }
 
         #endregion

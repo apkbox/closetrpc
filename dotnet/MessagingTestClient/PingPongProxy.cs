@@ -39,7 +39,11 @@ namespace MessagingTestClient
             callBuilder.MethodName = "Ping";
             callBuilder.CallData = BitConverter.GetBytes(value);
             var result = this.client.CallService(callBuilder);
-            if (result.Status != RpcStatus.Succeeded)
+            if (result.Status == RpcStatus.ChannelFailure)
+            {
+                throw new RpcException(result.Status);
+            }
+            else if (result.Status != RpcStatus.Succeeded)
             {
                 throw new ApplicationException();
             }
