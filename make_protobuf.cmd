@@ -15,10 +15,10 @@ IF %PROCESSOR_ARCHITECTURE% == x86 (
   )
 
 set TARGET_ARCH=x64
-set TARGET_CMAKE_ARCH=Win64
+set TARGET_CMAKE_ARCH= Win64
 if %_os_bitness%==32 (
     set TARGET_ARCH=x86
-    set TARGET_CMAKE_ARCH=Win32
+    set TARGET_CMAKE_ARCH=
   )
 
 if not exist "%_PROTOBUF_DIR%\src\google\protobuf\" (
@@ -31,15 +31,16 @@ if not exist "%_PROTOBUF_DIR%\src\google\protobuf\" (
 	)
 )
 
-pushd
-cd %_PROTOBUF_DIR%\csharp
+pushd %_PROTOBUF_DIR%\csharp
+setlocal
 call build_packages.bat 
+endlocal
 popd
 
 pushd
 mkdir %_PROTOBUF_DIR%\cmake\build 
 cd /d %_PROTOBUF_DIR%\cmake\build
-cmake -G "Visual Studio 12 %TARGET_CMAKE_ARCH%" -Dprotobuf_BUILD_TESTS=OFF -Dprotobuf_MSVC_STATIC_RUNTIME=OFF -DCMAKE_INSTALL_PREFIX=./install ..
+cmake -G "Visual Studio 12%TARGET_CMAKE_ARCH%" -Dprotobuf_BUILD_TESTS=OFF -Dprotobuf_MSVC_STATIC_RUNTIME=OFF -DCMAKE_INSTALL_PREFIX=./install ..
 
 call "%PROGRAM_FILES%\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" %TARGET_ARCH%
 cd
