@@ -33,6 +33,7 @@ if not exist "%_PROTOBUF_DIR%\src\google\protobuf\" (
 
 pushd %_PROTOBUF_DIR%\csharp
 setlocal
+set DOTNET_SKIP_FIRST_TIME_EXPERIENCE=false
 call build_packages.bat 
 endlocal
 popd

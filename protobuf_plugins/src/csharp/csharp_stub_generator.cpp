@@ -136,10 +136,61 @@ void GenerateStubImplementation(pb::io::Printer &printer,
   printer.Outdent();
 }
 
+std::string GetStubBaseDefinitions(
+  const pb::FileDescriptor *file,
+  const std::vector<code_model::ServiceModel> &models) {
+  std::string output;
+  {
+    // Scope the output stream so it closes and finalizes output to the string.
+    pb::io::StringOutputStream output_stream(&output);
+    pb::io::Printer printer(&output_stream, '$');
+    std::map<std::string, std::string> vars;
+
+    printer.Indent();
+
+    for (const auto &service : models) {
+      vars["service_name"] = service.name();
+      vars["service_interface_name"] = GetServiceInterfaceName(service.name());
+      vars["service_full_name"] = service.full_name();
+      vars["stub_base"] = GetServiceStubBaseName(service.name());
+      vars["base_class"] = kServiceBaseType;
+      vars["server_context_type"] = kServerContextType;
+      vars["rpc_call_type"] = kRpcCallType;
+      vars["rpc_result_type"] = kRpcResultType;
+
+      // clang-format off
+      printer.Print(vars, "public abstract class $stub_base$ : $base_class$\n{\n");
+      printer.Indent();
+      printer.Print(vars, "public string Name\n{\n");
+      printer.Indent();
+      printer.Print(vars, "get\n{\n");
+      printer.Indent();
+      printer.Print(vars, "return \"$service_full_name$\";\n");
+      printer.Outdent();
+      printer.Print(vars, "}\n");
+      printer.Outdent();
+      printer.Print(vars, "}\n\n");
+
+      printer.Print(vars, "protected abstract $service_interface_name$ Impl { get; }\n\n");
+
+      printer.Print(vars, "public void CallMethod($server_context_type$ context, $rpc_call_type$ rpcCall, $rpc_result_type$ rpcResult) {\n");
+      printer.Indent();
+      GenerateStubImplementation(printer, service);
+      printer.Outdent();
+      printer.Print(vars, "}\n\n");
+      // clang-format on
+    }
+  }
+  return output;
+}
+
 std::string GetStubDefinitions(
     const pb::FileDescriptor *file,
     const std::vector<code_model::ServiceModel> &models) {
   std::string output;
+
+  //output = GetStubBaseDefinitions(file, models);
+
   {
     // Scope the output stream so it closes and finalizes output to the string.
     pb::io::StringOutputStream output_stream(&output);

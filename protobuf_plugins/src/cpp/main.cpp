@@ -44,7 +44,7 @@ bool NanoRpcCppGenerator::Generate(const pb::FileDescriptor *file,
 
   /* clang-format off */
   std::string header_code = GetHeaderPrologue(file) +
-                            GetInterfaceDefinitions(service_models) +
+                            GetInterfaceDefinitions(file, service_models) +
                             GetStubDeclarations(file) +
                             GetProxyDeclarations(service_models) +
                             GetHeaderEpilogue(file);

@@ -11,6 +11,7 @@
 namespace pb = ::google::protobuf;
 
 std::string GetInterfaceDefinitions(
+    const pb::FileDescriptor *file,
     const std::vector<code_model::ServiceModel> &models) {
   std::string output;
   {

@@ -24,7 +24,7 @@ std::string GetMethodSignature(const code_model::MethodModel &method,
     pb::io::Printer printer(&output_stream, '$');
     std::map<std::string, std::string> vars;
 
-    vars["rpc_ns"] = "ClosetRpc.Net";
+    vars["rpc_ns"] = kRpcNamespace;
     vars["service_name_prefix"] = service_name.empty() ? "" : (service_name + "::");
     vars["method_name"] = method.name();
     vars["output_type_name"] = method.return_type().csharp_name();

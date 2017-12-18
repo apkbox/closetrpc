@@ -29,6 +29,7 @@ std::string GetSourceEpilogue(const ::google::protobuf::FileDescriptor *file);
 
 // cpp_interface_generator.cpp
 std::string GetInterfaceDefinitions(
+  const google::protobuf::FileDescriptor *file,
     const std::vector<code_model::ServiceModel> &models);
 
 // cpp_proxy_generator.cpp
