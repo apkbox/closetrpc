@@ -309,7 +309,8 @@ namespace ClosetRpc.Net
             IRpcResult result = null;
             try
             {
-                this.ProtocolObjectFactory.WriteMessage(this.channel.Stream, requestId, callBuilder, null);
+                var call = this.ProtocolObjectFactory.BuildCall(callBuilder);
+                this.ProtocolObjectFactory.WriteMessage(this.channel.Stream, requestId, call, null);
                 this.log.TraceFormat("Asynchronous message sent {0}.", requestId);
             }
             catch (IOException ex)
@@ -348,7 +349,8 @@ namespace ClosetRpc.Net
 
             try
             {
-                this.ProtocolObjectFactory.WriteMessage(this.channel.Stream, requestId, callBuilder, null);
+                var call = this.ProtocolObjectFactory.BuildCall(callBuilder);
+                this.ProtocolObjectFactory.WriteMessage(this.channel.Stream, requestId, call, null);
                 this.log.TraceFormat("Message sent {0}.", requestId);
             }
             catch (IOException ex)

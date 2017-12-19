@@ -117,7 +117,7 @@ namespace ClosetRpc.Net
                 if (channel != null)
                 {
                     this.log.Debug("Creating connection context and thread.");
-                    var context = new ServerContext(channel, new Thread(this.ConnectionThread));
+                    var context = new ServerContext(this, channel, new Thread(this.ConnectionThread));
                     lock (this.activeConnectionsLock)
                     {
                         this.activeConnections.Add(context);
@@ -178,6 +178,24 @@ namespace ClosetRpc.Net
         protected virtual IProtocolObjectFactory CreateProtocolObjectFactory()
         {
             return new ProtocolObjectFactory();
+        }
+
+        internal void SendEvent(IRpcCallBuilder callBuilder, Channel channel)
+        {
+            var cachedCall = this.ProtocolObjectFactory.BuildCall(callBuilder);
+            if(channel != null) {
+                this.ProtocolObjectFactory.WriteMessage(channel.Stream, 0, cachedCall, null);
+            }
+            else
+            {
+                lock(activeConnectionsLock)
+                {
+                    foreach(var c in activeConnections)
+                    {
+                        this.ProtocolObjectFactory.WriteMessage(c.Channel.Stream, 0, cachedCall, null);
+                    }
+                }
+            }
         }
 
         private void ConnectionThread(object param)

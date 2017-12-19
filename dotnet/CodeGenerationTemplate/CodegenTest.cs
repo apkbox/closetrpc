@@ -246,8 +246,8 @@ namespace CodegenTest {
       if (Uint64Value != other.Uint64Value) return false;
       if (Sint32Value != other.Sint32Value) return false;
       if (Sint64Value != other.Sint64Value) return false;
-      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(FloatValue, other.FloatValue)) return false;
-      if (!pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.Equals(DoubleValue, other.DoubleValue)) return false;
+      if (FloatValue != other.FloatValue) return false;
+      if (DoubleValue != other.DoubleValue) return false;
       if (EnumValue != other.EnumValue) return false;
       if (StringValue != other.StringValue) return false;
       return true;
@@ -263,8 +263,8 @@ namespace CodegenTest {
       if (Uint64Value != 0UL) hash ^= Uint64Value.GetHashCode();
       if (Sint32Value != 0) hash ^= Sint32Value.GetHashCode();
       if (Sint64Value != 0L) hash ^= Sint64Value.GetHashCode();
-      if (FloatValue != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(FloatValue);
-      if (DoubleValue != 0D) hash ^= pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.GetHashCode(DoubleValue);
+      if (FloatValue != 0F) hash ^= FloatValue.GetHashCode();
+      if (DoubleValue != 0D) hash ^= DoubleValue.GetHashCode();
       if (EnumValue != 0) hash ^= EnumValue.GetHashCode();
       if (StringValue.Length != 0) hash ^= StringValue.GetHashCode();
       return hash;

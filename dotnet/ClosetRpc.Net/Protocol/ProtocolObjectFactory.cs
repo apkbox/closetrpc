@@ -16,6 +16,11 @@ namespace ClosetRpc.Net.Protocol
     {
         #region Public Methods and Operators
 
+        public IRpcCall BuildCall(IRpcCallBuilder callBuilder)
+        {
+            return new RpcCall((RpcCallBuilder)callBuilder);
+        }
+
         public IRpcCallBuilder CreateCallBuilder()
         {
             return new RpcCallBuilder();
@@ -52,17 +57,17 @@ namespace ClosetRpc.Net.Protocol
             }
         }
 
-        public void WriteMessage(Stream stream, uint requestId, IRpcCallBuilder callBuilder, IRpcResult result)
+        public void WriteMessage(Stream stream, uint requestId, IRpcCall call, IRpcResult result)
         {
             using (var writer = new BinaryWriter(stream, Encoding.UTF8, true))
             {
                 writer.Write(requestId);
-                var contentFlags = (byte)((callBuilder != null ? 0x01 : 0) | (result != null ? 0x02 : 0));
+                var contentFlags = (byte)((call != null ? 0x01 : 0) | (result != null ? 0x02 : 0));
                 writer.Write(contentFlags);
 
-                if (callBuilder != null)
+                if (call != null)
                 {
-                    new RpcCall((RpcCallBuilder)callBuilder).Serialize(writer);
+                    ((RpcCall)call).Serialize(writer);
                 }
 
                 if (result != null)

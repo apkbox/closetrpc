@@ -16,12 +16,17 @@ namespace ClosetRpc.Net
     {
         #region Constructors and Destructors
 
-        public ServerContext(Channel channel, Thread thread)
+        public ServerContext(Server server, Channel channel, Thread thread)
         {
+            this.Server = server;
             this.Channel = channel;
             this.Thread = thread;
             this.ObjectManager = new ObjectManager();
+            this.GlobalEventSource = new GlobalEventSource(server);
+            this.LocalEventSource = new LocalEventSource(server, channel);
         }
+
+        public Server Server { get; }
 
         #endregion
 
@@ -32,6 +37,10 @@ namespace ClosetRpc.Net
         public ObjectManager ObjectManager { get; }
 
         public Thread Thread { get; set; }
+
+        public IEventSource GlobalEventSource { get; }
+
+        public IEventSource LocalEventSource { get; }
 
         #endregion
     }

@@ -16,6 +16,7 @@ namespace ClosetRpc.Net
 
     using Common.Logging;
 
+    // TODO: Extract interface as channel implementation is transport specific.
     public class Channel : IDisposable
     {
         #region Static Fields

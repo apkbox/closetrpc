@@ -110,7 +110,7 @@ namespace ClosetRpc.Test
             byte[] buffer;
             using (var s = new MemoryStream())
             {
-                var call = p.CreateCallBuilder();
+                var call = p.BuildCall(p.CreateCallBuilder());
                 p.WriteMessage(s, this.requestId, call, null);
                 buffer = s.ToArray();
             }
@@ -172,7 +172,8 @@ namespace ClosetRpc.Test
                 call.IsAsync = this.isAsync;
                 call.ObjectId = this.objectId;
                 call.CallData = this.callData;
-                p.WriteMessage(s, this.requestId, call, null);
+                var c = p.BuildCall(call);
+                p.WriteMessage(s, this.requestId, c, null);
                 buffer = s.ToArray();
             }
 

@@ -50,6 +50,7 @@
     <Compile Include="Channel.cs" />
     <Compile Include="ChannelStatus.cs" />
     <Compile Include="Client.cs" />
+    <Compile Include="GlobalEventSource.cs" />
     <Compile Include="GlobalObjectManager.cs" />
     <Compile Include="IRpcCallBuilder.cs" />
     <Compile Include="IClientTransport.cs" />
@@ -61,10 +62,12 @@
     <Compile Include="IRpcService.cs" />
     <Compile Include="IRpcServiceStub.cs" />
     <Compile Include="IServerTransport.cs" />
+    <Compile Include="LocalEventSource.cs" />
     <Compile Include="ObjectManager.cs" />
     <Compile Include="PendingCall.cs" />
     <Compile Include="PendingCallStatus.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="IEventSource.cs" />
     <Compile Include="Protocol\ProtocolObjectFactory.cs" />
     <Compile Include="Protocol\RpcCall.cs" />
     <Compile Include="Protocol\RpcCallBuilder.cs" />
