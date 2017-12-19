@@ -15,7 +15,7 @@ namespace TransportTestServer
     using System.Net.Sockets;
     using System.Threading;
 
-    using ClosetRpc.Net;
+    using ClosetRpc;
 
     public class PingPongServer
     {

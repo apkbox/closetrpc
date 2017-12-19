@@ -7,7 +7,7 @@
 // </summary>
 // --------------------------------------------------------------------------------
 
-namespace ClosetRpc.Net.Protocol
+namespace ClosetRpc.Protocol
 {
     internal class RpcCallBuilder : IRpcCallBuilder
     {

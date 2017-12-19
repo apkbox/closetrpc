@@ -7,7 +7,7 @@
 // </summary>
 // --------------------------------------------------------------------------------
 
-namespace ClosetRpc.Net
+namespace ClosetRpc
 {
     using System;
     using System.IO;
@@ -16,8 +16,7 @@ namespace ClosetRpc.Net
 
     using Common.Logging;
 
-    // TODO: Extract interface as channel implementation is transport specific.
-    public class Channel : IDisposable
+    internal class Channel : IDisposable, IChannel
     {
         #region Static Fields
 

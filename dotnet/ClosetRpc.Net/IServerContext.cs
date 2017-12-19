@@ -1,27 +1,23 @@
 ﻿// --------------------------------------------------------------------------------
-// <copyright file="IRpcCallBuilder.cs" company="Private">
+// <copyright file="IServerContext.cs" company="Private">
 //   Copyright (c) Alex Kozlov.
 // </copyright>
 // <summary>
-//   Defines the IRpcCallBuilder type.
+//   Defines the IServerContext type.
 // </summary>
 // --------------------------------------------------------------------------------
 
 namespace ClosetRpc
 {
-    public interface IRpcCallBuilder
+    public interface IServerContext
     {
         #region Public Properties
 
-        byte[] CallData { get; set; }
+        IEventSource GlobalEventSource { get; }
 
-        bool IsAsync { get; set; }
+        IEventSource LocalEventSource { get; }
 
-        string MethodName { get; set; }
-
-        ulong ObjectId { get; set; }
-
-        string ServiceName { get; set; }
+        ObjectManager ObjectManager { get; }
 
         #endregion
     }

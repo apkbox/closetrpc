@@ -7,7 +7,7 @@
 // </summary>
 // --------------------------------------------------------------------------------
 
-namespace ClosetRpc.Net
+namespace ClosetRpc
 {
     using System.Net.Sockets;
 
@@ -33,7 +33,7 @@ namespace ClosetRpc.Net
 
         #region Public Methods and Operators
 
-        public Channel Connect()
+        public IChannel Connect()
         {
             var tcpClient = new TcpClient();
             tcpClient.Connect(this.hostname, this.port);

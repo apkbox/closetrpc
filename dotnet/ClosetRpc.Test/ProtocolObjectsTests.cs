@@ -11,8 +11,8 @@ namespace ClosetRpc.Test
 {
     using System.IO;
 
-    using ClosetRpc.Net;
-    using ClosetRpc.Net.Protocol;
+    using ClosetRpc;
+    using ClosetRpc.Protocol;
 
     using NUnit.Framework;
 

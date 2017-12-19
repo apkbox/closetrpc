@@ -1,28 +1,41 @@
 ﻿// --------------------------------------------------------------------------------
-// <copyright file="ServerContext.cs" company="Private">
+// <copyright file="LocalEventSource.cs" company="Private">
 //   Copyright (c) Alex Kozlov.
 // </copyright>
 // <summary>
-//   Defines the ServerContext type.
+//   Defines the LocalEventSource type.
 // </summary>
 // --------------------------------------------------------------------------------
 
-namespace ClosetRpc.Net
+namespace ClosetRpc
 {
     internal class LocalEventSource : IEventSource
     {
-        private Server server;
-        private Channel channel;
+        #region Fields
 
-        public LocalEventSource(Server server, Channel channel)
+        private readonly IChannel channel;
+
+        private readonly Server server;
+
+        #endregion
+
+        #region Constructors and Destructors
+
+        public LocalEventSource(Server server, IChannel channel)
         {
             this.server = server;
             this.channel = channel;
         }
 
+        #endregion
+
+        #region Public Methods and Operators
+
         public void SendEvent(IRpcCallBuilder rpcCall)
         {
-            this.server.SendEvent(rpcCall, channel);
+            this.server.SendEvent(rpcCall, this.channel);
         }
+
+        #endregion
     }
 }

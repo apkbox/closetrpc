@@ -7,16 +7,15 @@
 // </summary>
 // --------------------------------------------------------------------------------
 
-namespace ClosetRpc.Net
+namespace ClosetRpc
 {
     using System.Threading;
 
-    // TODO: Extract interface
-    public class ServerContext
+    public class ServerContext : IServerContext
     {
         #region Constructors and Destructors
 
-        public ServerContext(Server server, Channel channel, Thread thread)
+        public ServerContext(Server server, IChannel channel, Thread thread)
         {
             this.Server = server;
             this.Channel = channel;
@@ -32,7 +31,7 @@ namespace ClosetRpc.Net
 
         #region Public Properties
 
-        public Channel Channel { get; set; }
+        public IChannel Channel { get; set; }
 
         public ObjectManager ObjectManager { get; }
 

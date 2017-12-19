@@ -12,7 +12,7 @@ namespace TransportTestServer
     using System;
     using System.IO;
 
-    using ClosetRpc.Net;
+    using ClosetRpc;
 
     public class PingPongService
     {
@@ -24,7 +24,7 @@ namespace TransportTestServer
 
         #region Fields
 
-        private readonly Channel channel;
+        private readonly IChannel channel;
 
         private int clientId;
 
@@ -32,7 +32,7 @@ namespace TransportTestServer
 
         #region Constructors and Destructors
 
-        public PingPongService(Channel channel)
+        public PingPongService(IChannel channel)
         {
             this.channel = channel;
         }

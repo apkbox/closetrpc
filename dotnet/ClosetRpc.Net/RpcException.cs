@@ -7,7 +7,7 @@
 // </summary>
 // --------------------------------------------------------------------------------
 
-namespace ClosetRpc.Net
+namespace ClosetRpc
 {
     using System;
 

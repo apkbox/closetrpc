@@ -11,7 +11,7 @@ namespace ClosetRpc.Test
 {
     using System.Threading;
 
-    using ClosetRpc.Net;
+    using ClosetRpc;
 
     using NUnit.Framework;
 
@@ -23,11 +23,14 @@ namespace ClosetRpc.Test
         {
             var channel = new Channel(null);
             var thread = new Thread(() => { });
-            // TODO: Server and event sources
-            var sc = new ServerContext(null, channel, thread);
+            var server = new Server(null);
+
+            var sc = new ServerContext(server, channel, thread);
             Assert.That(sc.Channel, Is.SameAs(channel));
             Assert.That(sc.Thread, Is.SameAs(thread));
             Assert.That(sc.ObjectManager, Is.Not.Null);
+            Assert.That(sc.GlobalEventSource, Is.Not.Null);
+            Assert.That(sc.LocalEventSource, Is.Not.Null);
         }
     }
 }

@@ -7,13 +7,13 @@
 // </summary>
 // --------------------------------------------------------------------------------
 
-namespace ClosetRpc.Net
+namespace ClosetRpc
 {
     public interface IClientTransport
     {
         #region Public Methods and Operators
 
-        Channel Connect();
+        IChannel Connect();
 
         #endregion
     }

@@ -7,7 +7,7 @@
     <ProjectGuid>{C69A1450-9088-46C4-808C-C6F7591AB3E8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ClosetRpc.Net</RootNamespace>
+    <RootNamespace>ClosetRpc</RootNamespace>
     <AssemblyName>ClosetRpc.Net</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -52,6 +52,7 @@
     <Compile Include="Client.cs" />
     <Compile Include="GlobalEventSource.cs" />
     <Compile Include="GlobalObjectManager.cs" />
+    <Compile Include="IChannel.cs" />
     <Compile Include="IRpcCallBuilder.cs" />
     <Compile Include="IClientTransport.cs" />
     <Compile Include="IObjectManager.cs" />
@@ -61,6 +62,7 @@
     <Compile Include="IRpcResult.cs" />
     <Compile Include="IRpcService.cs" />
     <Compile Include="IRpcServiceStub.cs" />
+    <Compile Include="IServerContext.cs" />
     <Compile Include="IServerTransport.cs" />
     <Compile Include="LocalEventSource.cs" />
     <Compile Include="ObjectManager.cs" />

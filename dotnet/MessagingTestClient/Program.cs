@@ -13,7 +13,7 @@ namespace MessagingTestClient
     using System.Net.Sockets;
     using System.Threading;
 
-    using ClosetRpc.Net;
+    using ClosetRpc;
 
     using Common.Logging;
 

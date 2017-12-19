@@ -7,7 +7,7 @@
 // </summary>
 // --------------------------------------------------------------------------------
 
-namespace ClosetRpc.Net
+namespace ClosetRpc
 {
     public interface IRpcServiceStub
     {
@@ -19,7 +19,7 @@ namespace ClosetRpc.Net
         /// <param name="context">Server context.</param>
         /// <param name="rpcCall">RPC call message.</param>
         /// <param name="rpcResult">RPC result message.</param>
-        void CallMethod(ServerContext context, IRpcCall rpcCall, IRpcResult rpcResult);
+        void CallMethod(IServerContext context, IRpcCall rpcCall, IRpcResult rpcResult);
 
         #endregion
     }

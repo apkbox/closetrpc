@@ -7,12 +7,12 @@
 // </summary>
 // --------------------------------------------------------------------------------
 
-namespace ClosetRpc.Net
+namespace ClosetRpc
 {
     public interface IServerTransport
     {
         void Cancel();
 
-        Channel Listen();
+        IChannel Listen();
     }
 }

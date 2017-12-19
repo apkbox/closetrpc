@@ -1,27 +1,27 @@
 ﻿// --------------------------------------------------------------------------------
-// <copyright file="IRpcCallBuilder.cs" company="Private">
+// <copyright file="IChannel.cs" company="Private">
 //   Copyright (c) Alex Kozlov.
 // </copyright>
 // <summary>
-//   Defines the IRpcCallBuilder type.
+//   Defines the IChannel type.
 // </summary>
 // --------------------------------------------------------------------------------
 
 namespace ClosetRpc
 {
-    public interface IRpcCallBuilder
+    using System.IO;
+
+    public interface IChannel
     {
         #region Public Properties
 
-        byte[] CallData { get; set; }
+        Stream Stream { get; }
 
-        bool IsAsync { get; set; }
+        #endregion
 
-        string MethodName { get; set; }
+        #region Public Methods and Operators
 
-        ulong ObjectId { get; set; }
-
-        string ServiceName { get; set; }
+        void Close();
 
         #endregion
     }

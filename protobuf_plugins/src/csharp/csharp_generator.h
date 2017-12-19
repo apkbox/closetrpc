@@ -19,13 +19,13 @@ namespace closetrpc_csharp_codegen {
 
 namespace pb = ::google::protobuf;
 
-const std::string kRpcNamespace = "global::ClosetRpc.Net";
-const std::string kServiceBaseType = "global::ClosetRpc.Net.IRpcService";
-const std::string kServerContextType = "global::ClosetRpc.Net.ServerContext";
-const std::string kRpcCallType = "global::ClosetRpc.Net.IRpcCall";
-const std::string kRpcResultType = "global::ClosetRpc.Net.IRpcResult";
-const std::string kRpcClientType = "global::ClosetRpc.Net.Client";
-const std::string kRpcStatusType = "global::ClosetRpc.Net.RpcStatus";
+const std::string kRpcNamespace = "global::ClosetRpc";
+const std::string kServiceBaseType = "global::ClosetRpc.IRpcService";
+const std::string kServerContextType = "global::ClosetRpc.IServerContext";
+const std::string kRpcCallType = "global::ClosetRpc.IRpcCall";
+const std::string kRpcResultType = "global::ClosetRpc.IRpcResult";
+const std::string kRpcClientType = "global::ClosetRpc.Client";
+const std::string kRpcStatusType = "global::ClosetRpc.RpcStatus";
 
 inline std::string GetInterfaceName(const std::string &service_name) {
   return service_name + "Interface";

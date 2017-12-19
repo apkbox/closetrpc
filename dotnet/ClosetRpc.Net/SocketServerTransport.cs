@@ -7,7 +7,7 @@
 // </summary>
 // --------------------------------------------------------------------------------
 
-namespace ClosetRpc.Net
+namespace ClosetRpc
 {
     using System.Net;
     using System.Net.Sockets;
@@ -36,7 +36,7 @@ namespace ClosetRpc.Net
             this.listener.Stop();
         }
 
-        public Channel Listen()
+        public IChannel Listen()
         {
             this.listener.Start();
             var client = this.listener.AcceptTcpClient();

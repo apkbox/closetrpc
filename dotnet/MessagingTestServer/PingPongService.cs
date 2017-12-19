@@ -11,7 +11,7 @@ namespace MessagingTestServer
 {
     using System;
 
-    using ClosetRpc.Net;
+    using ClosetRpc;
 
     internal class PingPongService : IRpcService
     {
@@ -23,7 +23,7 @@ namespace MessagingTestServer
 
         #region Public Methods and Operators
 
-        public void CallMethod(ServerContext context, IRpcCall rpcCall, IRpcResult result)
+        public void CallMethod(IServerContext context, IRpcCall rpcCall, IRpcResult result)
         {
             if (rpcCall.MethodName == "Ping")
             {

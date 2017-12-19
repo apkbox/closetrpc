@@ -12,7 +12,7 @@ namespace CodegenTest
 {
     using System;
 
-    using ClosetRpc.Net;
+    using ClosetRpc;
 
     using Google.Protobuf;
     using Google.Protobuf.WellKnownTypes;
@@ -21,17 +21,17 @@ namespace CodegenTest
     {
         #region Public Methods and Operators
 
-        void Method_V_V(ServerContext context);
+        void Method_V_V(IServerContext context);
 
-        void Method_V_M(ServerContext context, StructType value);
+        void Method_V_M(IServerContext context, StructType value);
 
-        StructType Method_M_V(ServerContext context);
+        StructType Method_M_V(IServerContext context);
 
-        StructType Method_M_M(ServerContext context, StructType value);
+        StructType Method_M_M(IServerContext context, StructType value);
 
-        void AsyncMethod_V_V(ServerContext context);
+        void AsyncMethod_V_V(IServerContext context);
 
-        void AsyncMethod_V_M(ServerContext context, StructType value);
+        void AsyncMethod_V_M(IServerContext context, StructType value);
 
         #endregion
     }
@@ -48,7 +48,7 @@ namespace CodegenTest
 
         protected abstract TestServiceInterface Impl { get; }
 
-        public void CallMethod(ServerContext context, IRpcCall rpcCall, IRpcResult rpcResult)
+        public void CallMethod(IServerContext context, IRpcCall rpcCall, IRpcResult rpcResult)
         {
             rpcResult.Status = RpcStatus.Succeeded;
 
@@ -112,17 +112,17 @@ namespace CodegenTest
             }
         }
 
-        public abstract void Method_V_V(ServerContext context);
+        public abstract void Method_V_V(IServerContext context);
 
-        public abstract void Method_V_M(ServerContext context, StructType value);
+        public abstract void Method_V_M(IServerContext context, StructType value);
 
-        public abstract StructType Method_M_V(ServerContext context);
+        public abstract StructType Method_M_V(IServerContext context);
 
-        public abstract StructType Method_M_M(ServerContext context, StructType value);
+        public abstract StructType Method_M_M(IServerContext context, StructType value);
 
-        public abstract void AsyncMethod_V_V(ServerContext context);
+        public abstract void AsyncMethod_V_V(IServerContext context);
 
-        public abstract void AsyncMethod_V_M(ServerContext context, StructType value);
+        public abstract void AsyncMethod_V_M(IServerContext context, StructType value);
     }
 
     public class TestServiceInterface_Proxy
@@ -179,7 +179,7 @@ namespace CodegenTest
             return returnValue;
         }
 
-        public StructType Method_M_M(ServerContext context, StructType value)
+        public StructType Method_M_M(IServerContext context, StructType value)
         {
             var call = this.client.CreateCallBuilder();
             call.ServiceName = TestServiceInterface_Proxy.ServiceName;
@@ -196,7 +196,7 @@ namespace CodegenTest
             return returnValue;
         }
 
-        public void AsyncMethod_V_V(ServerContext context)
+        public void AsyncMethod_V_V(IServerContext context)
         {
             var call = this.client.CreateCallBuilder();
             call.ServiceName = TestServiceInterface_Proxy.ServiceName;
@@ -209,7 +209,7 @@ namespace CodegenTest
             }
         }
 
-        public void AsyncMethod_V_M(ServerContext context, StructType value)
+        public void AsyncMethod_V_M(IServerContext context, StructType value)
         {
             var call = this.client.CreateCallBuilder();
             call.ServiceName = TestServiceInterface_Proxy.ServiceName;

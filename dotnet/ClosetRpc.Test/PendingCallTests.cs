@@ -9,7 +9,7 @@
 
 namespace ClosetRpc.Test
 {
-    using ClosetRpc.Net;
+    using ClosetRpc;
 
     using NUnit.Framework;
 

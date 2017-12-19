@@ -12,11 +12,11 @@ namespace ProtobufTestApp
     using System;
     using System.Threading;
 
-    using ClosetRpc.Net;
+    using ClosetRpc;
 
     using ProtobufTestApp.Services;
 
-    class Program
+    public class Program
     {
         #region Static Fields
 

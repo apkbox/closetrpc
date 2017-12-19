@@ -7,7 +7,7 @@
 // </summary>
 // --------------------------------------------------------------------------------
 
-namespace ClosetRpc.Net.Protocol
+namespace ClosetRpc.Protocol
 {
     using System.IO;
     using System.Text;

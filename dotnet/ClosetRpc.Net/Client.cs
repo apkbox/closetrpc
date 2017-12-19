@@ -7,7 +7,7 @@
 // </summary>
 // --------------------------------------------------------------------------------
 
-namespace ClosetRpc.Net
+namespace ClosetRpc
 {
     using System;
     using System.Collections.Generic;
@@ -15,7 +15,7 @@ namespace ClosetRpc.Net
     using System.IO;
     using System.Threading;
 
-    using ClosetRpc.Net.Protocol;
+    using ClosetRpc.Protocol;
 
     using Common.Logging;
 
@@ -24,8 +24,6 @@ namespace ClosetRpc.Net
         #region Fields
 
         private readonly Lazy<IProtocolObjectFactory> cachedFactory;
-
-        private readonly Channel channel;
 
         private readonly ILog log = LogManager.GetLogger<Client>();
 
@@ -36,6 +34,10 @@ namespace ClosetRpc.Net
         private readonly object receiveThreadInitLock = new object();
 
         private readonly object requestIdLock = new object();
+
+        private readonly IClientTransport transport;
+
+        private IChannel channel;
 
         private bool isRunning;
 
@@ -49,8 +51,8 @@ namespace ClosetRpc.Net
 
         public Client(IClientTransport transport)
         {
+            this.transport = transport;
             this.log.Debug("Client created.");
-            this.channel = transport.Connect();
             this.cachedFactory = new Lazy<IProtocolObjectFactory>(this.CreateProtocolObjectFactory);
         }
 
@@ -112,6 +114,11 @@ namespace ClosetRpc.Net
             }
 
             return result;
+        }
+
+        public void Connect()
+        {
+            this.channel = this.transport.Connect();
         }
 
         public IRpcCallBuilder CreateCallBuilder()

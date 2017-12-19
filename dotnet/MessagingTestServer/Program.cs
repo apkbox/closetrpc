@@ -11,7 +11,7 @@ namespace MessagingTestServer
 {
     using System;
 
-    using ClosetRpc.Net;
+    using ClosetRpc;
 
     using Common.Logging;
 

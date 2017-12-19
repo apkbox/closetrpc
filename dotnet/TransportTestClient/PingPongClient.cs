@@ -14,13 +14,13 @@ namespace TransportTestClient
     using System.Net.Sockets;
     using System.Text;
 
-    using ClosetRpc.Net;
+    using ClosetRpc;
 
     internal class PingPongClient
     {
         #region Fields
 
-        private Channel channel;
+        private IChannel channel;
 
         private SocketClientTransport clientTransport;
 

@@ -11,7 +11,7 @@ namespace MessagingTestClient
 {
     using System;
 
-    using ClosetRpc.Net;
+    using ClosetRpc;
 
     public class PingPongProxy : IPingPong
     {

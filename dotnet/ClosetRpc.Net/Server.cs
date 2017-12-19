@@ -7,7 +7,7 @@
 // </summary>
 // --------------------------------------------------------------------------------
 
-namespace ClosetRpc.Net
+namespace ClosetRpc
 {
     using System;
     using System.Collections.Generic;
@@ -16,7 +16,7 @@ namespace ClosetRpc.Net
     using System.Net.Sockets;
     using System.Threading;
 
-    using ClosetRpc.Net.Protocol;
+    using ClosetRpc.Protocol;
 
     using Common.Logging;
 
@@ -95,7 +95,7 @@ namespace ClosetRpc.Net
 
             while (this.isRunning)
             {
-                Channel channel;
+                IChannel channel;
                 try
                 {
                     this.log.Trace("Listening for incoming connections...");
@@ -180,7 +180,7 @@ namespace ClosetRpc.Net
             return new ProtocolObjectFactory();
         }
 
-        internal void SendEvent(IRpcCallBuilder callBuilder, Channel channel)
+        internal void SendEvent(IRpcCallBuilder callBuilder, IChannel channel)
         {
             var cachedCall = this.ProtocolObjectFactory.BuildCall(callBuilder);
             if(channel != null) {

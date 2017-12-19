@@ -1,8 +1,17 @@
-﻿namespace ProtobufTestApp
+﻿// --------------------------------------------------------------------------------
+// <copyright file="SettingsService.cs" company="Private">
+//   Copyright (c) Alex Kozlov.
+// </copyright>
+// <summary>
+//   Defines the SettingsService type.
+// </summary>
+// --------------------------------------------------------------------------------
+
+namespace ProtobufTestApp
 {
     using System.Collections.Generic;
 
-    using ClosetRpc.Net;
+    using ClosetRpc;
 
     using ProtobufTestApp.Services;
 
@@ -16,7 +25,7 @@
 
         #region Public Methods and Operators
 
-        public override SettingList Get(ServerContext context, SettingKeyList value)
+        public override SettingList Get(IServerContext context, SettingKeyList value)
         {
             var result = new SettingList();
             foreach (var item in value.Item)
@@ -30,7 +39,7 @@
             return result;
         }
 
-        public override void Set(ServerContext context, SettingList value)
+        public override void Set(IServerContext context, SettingList value)
         {
             foreach (var item in value.Item)
             {

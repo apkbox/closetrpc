@@ -11,7 +11,7 @@ namespace ClosetRpc.Test
 {
     using System;
 
-    using ClosetRpc.Net;
+    using ClosetRpc;
 
     using NUnit.Framework;
 
@@ -105,7 +105,7 @@ namespace ClosetRpc.Test
         {
             #region Public Methods and Operators
 
-            public void CallMethod(ServerContext context, IRpcCall rpcCall, IRpcResult rpcResult)
+            public void CallMethod(IServerContext context, IRpcCall rpcCall, IRpcResult rpcResult)
             {
             }
 
@@ -131,7 +131,7 @@ namespace ClosetRpc.Test
 
             #region Public Methods and Operators
 
-            public void CallMethod(ServerContext context, IRpcCall rpcCall, IRpcResult rpcResult)
+            public void CallMethod(IServerContext context, IRpcCall rpcCall, IRpcResult rpcResult)
             {
             }
 
