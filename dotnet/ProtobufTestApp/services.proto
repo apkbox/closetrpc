@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "closetrpc_types.proto";
+
+package services;
+
+option csharp_namespace = "ProtobufTestApp.Services";
+
+message Setting {
+	string key = 1;
+	string value = 2;
+}
+
+message SettingList {
+	repeated Setting item = 1;
+}
+
+message SettingKeyList {
+	repeated string item = 1;
+}
+
+service SettingsEvents {
+	option(nanorpc.event_source) = true;
+	rpc Changed (SettingList) returns (google.protobuf.Empty);
+}
+
+service SettingsService {
+	rpc Get (SettingKeyList) returns (SettingList);
+	rpc Set (SettingList) returns (google.protobuf.Empty);
+}
+

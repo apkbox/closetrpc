@@ -60,8 +60,7 @@ std::string GetPropertySignature(const code_model::MethodModel *method,
   return output;
 }
 
-std::string GetMethodSignature(const code_model::MethodModel &method,
-                               const std::string &service_name,
+std::string GetMethodSignature(const google::protobuf::MethodDescriptor &method,
                                bool server) {
   std::string output;
   {
@@ -70,46 +69,46 @@ std::string GetMethodSignature(const code_model::MethodModel &method,
     pb::io::Printer printer(&output_stream, '$');
     std::map<std::string, std::string> vars;
 
-    vars["service_name_prefix"] = service_name.empty() ? "" : (service_name + "::");
-    vars["method_name"] = method.name();
-    vars["output_type_name"] = method.return_type().name();
+    //vars["service_name_prefix"] = service_name.empty() ? "" : (service_name + "::");
+    //vars["method_name"] = method.name();
+    //vars["output_type_name"] = method.return_type().name();
 
-    if (method.return_type().is_reference_type()) {
-      printer.Print(vars, "void $service_name_prefix$$method_name$(");
-      if (server)
-        printer.Print(vars, "nanorpc::ServerContextInterface *context");
-    } else {
-      printer.Print(vars, "$output_type_name$ $service_name_prefix$$method_name$(");
-      if (server)
-        printer.Print(vars, "nanorpc::ServerContextInterface *context");
-    }
+    //if (method.return_type().is_reference_type()) {
+    //  printer.Print(vars, "void $service_name_prefix$$method_name$(");
+    //  if (server)
+    //    printer.Print(vars, "nanorpc::ServerContextInterface *context");
+    //} else {
+    //  printer.Print(vars, "$output_type_name$ $service_name_prefix$$method_name$(");
+    //  if (server)
+    //    printer.Print(vars, "nanorpc::ServerContextInterface *context");
+    //}
 
-    if (server && (method.arguments().size() > 0 ||
-                   method.return_type().is_reference_type())) {
-      printer.Print(", ");
-    }
+    //if (server && (method.arguments().size() > 0 ||
+    //               method.return_type().is_reference_type())) {
+    //  printer.Print(", ");
+    //}
 
-    for (size_t i = 0; i < method.arguments().size(); ++i) {
-      const auto &arg = method.arguments()[i];
+    //for (size_t i = 0; i < method.arguments().size(); ++i) {
+    //  const auto &arg = method.arguments()[i];
 
-      std::map<std::string, std::string> vars;
+    //  std::map<std::string, std::string> vars;
 
-      vars["arg_type"] = arg.type().name();
-      vars["const"] = arg.type().is_reference_type() ? "const " : "";
-      vars["reference"] = arg.type().is_reference_type() ? "&" : "";
-      vars["arg_name"] = arg.name();
-      printer.Print(vars, "$const$$arg_type$ $reference$$arg_name$");
-      if ((i + 1) < method.arguments().size())
-        printer.Print(", ");
-    }
+    //  vars["arg_type"] = arg.type().name();
+    //  vars["const"] = arg.type().is_reference_type() ? "const " : "";
+    //  vars["reference"] = arg.type().is_reference_type() ? "&" : "";
+    //  vars["arg_name"] = arg.name();
+    //  printer.Print(vars, "$const$$arg_type$ $reference$$arg_name$");
+    //  if ((i + 1) < method.arguments().size())
+    //    printer.Print(", ");
+    //}
 
-    if (method.return_type().is_reference_type()) {
-      if (method.arguments().size() > 0)
-        printer.Print(", ");
-      printer.Print(vars, "$output_type_name$ *out__)");
-    } else {
-      printer.Print(")");
-    }
+    //if (method.return_type().is_reference_type()) {
+    //  if (method.arguments().size() > 0)
+    //    printer.Print(", ");
+    //  printer.Print(vars, "$output_type_name$ *out__)");
+    //} else {
+    //  printer.Print(")");
+    //}
   }
 
   return output;

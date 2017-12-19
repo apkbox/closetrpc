@@ -58,9 +58,9 @@ namespace CodegenTest
             }
             else if (rpcCall.MethodName == "Method_V_M")
             {
-                var intput = new StructType();
-                intput.MergeFrom(new CodedInputStream(rpcCall.CallData));
-                this.Impl.Method_V_M(context, intput);
+                var input = new StructType();
+                input.MergeFrom(new CodedInputStream(rpcCall.CallData));
+                this.Impl.Method_V_M(context, input);
                 rpcResult.ResultData = new Empty().ToByteArray();
             }
             else if (rpcCall.MethodName == "Method_M_V")
@@ -70,9 +70,9 @@ namespace CodegenTest
             }
             else if (rpcCall.MethodName == "Method_M_M")
             {
-                var intput = new StructType();
-                intput.MergeFrom(new CodedInputStream(rpcCall.CallData));
-                var result = this.Impl.Method_M_M(context, intput);
+                var input = new StructType();
+                input.MergeFrom(new CodedInputStream(rpcCall.CallData));
+                var result = this.Impl.Method_M_M(context, input);
                 rpcResult.ResultData = result.ToByteArray();
             }
             else if (rpcCall.MethodName == "AsyncMethod_V_V")
@@ -81,9 +81,9 @@ namespace CodegenTest
             }
             else if (rpcCall.MethodName == "AsyncMethod_V_M")
             {
-                var intput = new StructType();
-                intput.MergeFrom(new CodedInputStream(rpcCall.CallData));
-                this.Impl.AsyncMethod_V_M(context, intput);
+                var input = new StructType();
+                input.MergeFrom(new CodedInputStream(rpcCall.CallData));
+                this.Impl.AsyncMethod_V_M(context, input);
             }
             else
             {

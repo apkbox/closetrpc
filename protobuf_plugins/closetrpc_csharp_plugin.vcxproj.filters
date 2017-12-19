@@ -33,24 +33,12 @@
     <ClCompile Include="..\shared\closetrpc_types.pb.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\csharp\code_model.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\csharp\generator_utils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\csharp\csharp_generator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\closetrpc_types.pb.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\csharp\code_model.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\csharp\generator_utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

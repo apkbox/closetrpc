@@ -3,19 +3,75 @@
 #include <string>
 #include <vector>
 
+#include "google/protobuf/empty.pb.h"
 #include "google/protobuf/io/printer.h"
 #include "google/protobuf/io/zero_copy_stream_impl_lite.h"
 
 #include "closetrpc_types.pb.h"
 
 #include "common/generator_utils.h"
-#include "common/code_model.h"
+
+namespace {
+// TODO(jtattermusch): can we reuse a utility function?
+std::string UnderscoresToCamelCase(const std::string &input,
+                                   bool cap_next_letter,
+                                   bool preserve_period) {
+  std::string result;
+  // Note:  I distrust ctype.h due to locales.
+  for (int i = 0; i < input.size(); i++) {
+    if ('a' <= input[i] && input[i] <= 'z') {
+      if (cap_next_letter) {
+        result += input[i] + ('A' - 'a');
+      } else {
+        result += input[i];
+      }
+      cap_next_letter = false;
+    } else if ('A' <= input[i] && input[i] <= 'Z') {
+      if (i == 0 && !cap_next_letter) {
+        // Force first letter to lower-case unless explicitly told to
+        // capitalize it.
+        result += input[i] + ('a' - 'A');
+      } else {
+        // Capital letters after the first are left as-is.
+        result += input[i];
+      }
+      cap_next_letter = false;
+    } else if ('0' <= input[i] && input[i] <= '9') {
+      result += input[i];
+      cap_next_letter = true;
+    } else {
+      cap_next_letter = true;
+      if (input[i] == '.' && preserve_period) {
+        result += '.';
+      }
+    }
+  }
+  // Add a trailing "_" if the name should be altered.
+  if (input[input.size() - 1] == '#') {
+    result += '_';
+  }
+  return result;
+}
+
+std::string UnderscoresToPascalCase(const std::string &input) {
+  return UnderscoresToCamelCase(input, true, false);
+}
+
+}  // namespace
+
+namespace closetrpc_csharp_codegen {
 
 namespace pb = google::protobuf;
 namespace pbc = google::protobuf::compiler;
 
-std::string GetMethodSignature(const code_model::MethodModel &method,
-                               const std::string &service_name,
+std::string GetFileNamespace(const pb::FileDescriptor *descriptor) {
+  if (descriptor->options().has_csharp_namespace()) {
+    return descriptor->options().csharp_namespace();
+  }
+  return UnderscoresToCamelCase(descriptor->package(), true, true);
+}
+
+std::string GetMethodSignature(const pb::MethodDescriptor &method,
                                bool server) {
   std::string output;
   {
@@ -24,29 +80,25 @@ std::string GetMethodSignature(const code_model::MethodModel &method,
     pb::io::Printer printer(&output_stream, '$');
     std::map<std::string, std::string> vars;
 
-    vars["rpc_ns"] = kRpcNamespace;
-    vars["service_name_prefix"] = service_name.empty() ? "" : (service_name + "::");
+    vars["server_context_type"] = kServerContextType;
     vars["method_name"] = method.name();
-    vars["output_type_name"] = method.return_type().csharp_name();
+    vars["output_type_name"] = method.output_type()->name();
 
-    printer.Print(vars, "$output_type_name$ $service_name_prefix$$method_name$(");
+    if (method.output_type()->full_name() ==
+        pb::Empty::descriptor()->full_name())
+      vars["output_type_name"] = "void";
+
+    printer.Print(vars, "$output_type_name$ $method_name$(");
     if (server)
-      printer.Print(vars, "$rpc_ns$.IServerContext context");
+      printer.Print(vars, "$server_context_type$ context");
 
-    if (server && (method.arguments().size() > 0)) {
-      printer.Print(", ");
-    }
-
-    for (size_t i = 0; i < method.arguments().size(); ++i) {
-      const auto &arg = method.arguments()[i];
-
-      std::map<std::string, std::string> vars;
-
-      vars["arg_type"] = arg.type().csharp_name();
-      vars["arg_name"] = arg.name();
-      printer.Print(vars, "$arg_type$ $arg_name$");
-      if ((i + 1) < method.arguments().size())
+    if (method.input_type() != nullptr &&
+        method.input_type()->full_name() !=
+            pb::Empty::descriptor()->full_name()) {
+      vars["input_type_name"] = method.input_type()->name();
+      if (server)
         printer.Print(", ");
+      printer.Print(vars, "$input_type_name$ value");
     }
 
     printer.Print(")");
@@ -55,53 +107,36 @@ std::string GetMethodSignature(const code_model::MethodModel &method,
   return output;
 }
 
-std::string GetSourcePrologue(const pb::FileDescriptor *file) {
-  std::string output;
-  {
-    // Scope the output stream so it closes and finalizes output to the string.
-    pb::io::StringOutputStream output_stream(&output);
-    pb::io::Printer printer(&output_stream, '$');
-    std::map<std::string, std::string> vars;
+void GetSourcePrologue(pb::io::Printer &printer,
+                       const pb::FileDescriptor &file) {
+  std::map<std::string, std::string> vars;
 
-    vars["filename"] = file->name();
-    vars["filename_identifier"] = FilenameIdentifier(file->name());
-    vars["filename_base"] = StripProto(file->name());
+  vars["filename"] = GetFileNamespace(&file);
+  vars["ns"] = GetFileNamespace(&file);
 
-    /* clang-format off */
-    printer.Print(vars, "// Generated by the nanorpc protobuf plugin.\n");
-    printer.Print(vars, "// If you make any local change, they will be lost.\n");
-    printer.Print(vars, "// source: $filename$\n");
-    printer.Print(vars, "\n");
-    printer.Print(vars, "\n");
-    /* clang-format on */
+  /* clang-format off */
+  printer.Print(vars, "// Generated by the nanorpc protobuf plugin.\n");
+  printer.Print(vars, "// If you make any local change, they will be lost.\n");
+  printer.Print(vars, "// source: $filename$\n\n");
+  /* clang-format on */
 
-    if (!file->package().empty()) {
-      vars["ns"] = file->package();
-      printer.Print(vars, "namespace $ns$ {\n");
-      printer.Print(vars, "\n");
-    }
-  }
-  return output;
-}
-
-std::string GetSourceEpilogue(const pb::FileDescriptor *file) {
-  std::string output;
-  {
-    // Scope the output stream so it closes and finalizes output to the string.
-    pb::io::StringOutputStream output_stream(&output);
-    pb::io::Printer printer(&output_stream, '$');
-    std::map<std::string, std::string> vars;
-
-    vars["filename"] = file->name();
-    vars["filename_identifier"] = FilenameIdentifier(file->name());
-
-    if (!file->package().empty()) {
-      vars["ns"] = file->package();
-      printer.Print(vars, "}  // namespace $ns$\n");
-      printer.Print(vars, "\n");
-    }
-
+  if (!file.package().empty()) {
+    printer.Print(vars, "namespace $ns$\n{\n");
+    printer.Indent();
+    printer.Print(vars, "using System;\n");
+    printer.Print(vars, "using Google.Protobuf;\n");
+    printer.Outdent();
     printer.Print(vars, "\n");
   }
-  return output;
 }
+
+void GetSourceEpilogue(pb::io::Printer &printer,
+                       const pb::FileDescriptor &file) {
+  std::map<std::string, std::string> vars;
+
+  if (!file.package().empty()) {
+    printer.Print("}\n");
+  }
+}
+
+}  // namespace closetrpc_csharp_codegen

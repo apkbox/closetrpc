@@ -143,19 +143,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\shared\closetrpc_types.pb.cc" />
-    <ClCompile Include="src\csharp\code_model.cpp" />
     <ClCompile Include="src\csharp\csharp_interface_generator.cpp" />
     <ClCompile Include="src\csharp\csharp_proxy_generator.cpp" />
     <ClCompile Include="src\csharp\csharp_stub_generator.cpp" />
     <ClCompile Include="src\csharp\csharp_generator.cpp" />
-    <ClCompile Include="src\csharp\generator_utils.cpp" />
     <ClCompile Include="src\csharp\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\closetrpc_types.pb.h" />
-    <ClInclude Include="src\csharp\code_model.h" />
     <ClInclude Include="src\csharp\csharp_generator.h" />
-    <ClInclude Include="src\csharp\generator_utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

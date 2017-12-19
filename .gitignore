@@ -25,3 +25,5 @@
 /third_party/protobuf/
 /tmp/
 /third_party/protobuf_dotnet/
+/dotnet/ProtobufTestApp/bin/
+/dotnet/ProtobufTestApp/obj/

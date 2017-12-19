@@ -6,6 +6,8 @@ import "closetrpc_types.proto";
 
 package arizona_api_service;
 
+option csharp_namespace = "Arizona.ArizonaApiService";
+
 message ProductInfo {
   string version = 1;
   string version_string = 2;
@@ -52,7 +54,7 @@ service SettingsEvents {
 	rpc Changed (SettingList) returns (google.protobuf.Empty);
 }
 
-service SettingsInterface {
+service SettingsService {
 	rpc Get (SettingKeyList) returns (SettingList);
 	rpc Set (SettingList) returns (google.protobuf.Empty);
 }
@@ -62,11 +64,11 @@ service SoftwareUpdateEvents {
 	rpc PackageListChanged (google.protobuf.Empty) returns (google.protobuf.Empty);
 }
 
-service ProductInfoInterface {
+service ProductInfoService {
 	rpc GetProductInfo (google.protobuf.Empty) returns (ProductInfo);
 }
 
-service SoftwareUpdateInterface {
+service SoftwareUpdateService {
 	rpc GetAvailablePackages (google.protobuf.Empty) returns (SoftwarePackageList);
 	rpc StartPackageInstallation (google.protobuf.StringValue) returns (google.protobuf.BoolValue);
 	rpc DeletePackage (google.protobuf.StringValue) returns (google.protobuf.BoolValue);
