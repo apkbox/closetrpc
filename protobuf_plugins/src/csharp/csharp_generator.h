@@ -56,6 +56,10 @@ void GetSourcePrologue(pb::io::Printer &printer,
 void GetSourceEpilogue(pb::io::Printer &printer,
                        const pb::FileDescriptor &file);
 
+// csharp_event_proxy_generator.cpp
+void GenerateEventProxy(pb::io::Printer &printer,
+                        const pb::ServiceDescriptor &service);
+
 // csharp_interface_generator.cpp
 void GenerateInterfaceDefinition(pb::io::Printer &printer,
                                  const pb::ServiceDescriptor &service);

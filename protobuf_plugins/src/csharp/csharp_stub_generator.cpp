@@ -9,6 +9,8 @@
 #include "google/protobuf/io/printer.h"
 #include "google/protobuf/io/zero_copy_stream_impl_lite.h"
 
+#include "closetrpc_types.pb.h"
+
 namespace closetrpc_csharp_codegen {
 
 namespace pb = ::google::protobuf;
@@ -181,9 +183,11 @@ void GetStubDefinitions(pb::io::Printer &printer,
   printer.Indent();
   for (int i = 0; i < file.service_count(); ++i) {
     const auto &service = *file.service(i);
-    GenerateStubBase(printer, service);
-    GenerateStub(printer, service);
-    GenerateServiceBase(printer, service);
+    if (!service.options().HasExtension(nanorpc::event_source)) {
+      GenerateStubBase(printer, service);
+      GenerateStub(printer, service);
+      GenerateServiceBase(printer, service);
+    }
   }
   printer.Outdent();
 }

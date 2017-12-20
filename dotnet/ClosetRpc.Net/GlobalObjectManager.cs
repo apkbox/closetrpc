@@ -14,6 +14,7 @@ namespace ClosetRpc
 
     /// <summary>
     /// Manages services registered with the service.
+    /// TODO: Make thread safe
     /// </summary>
     internal class GlobalObjectManager
     {

@@ -10,6 +10,7 @@
 namespace ClosetRpc
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
@@ -24,6 +25,14 @@ namespace ClosetRpc
         #region Fields
 
         private readonly Lazy<IProtocolObjectFactory> cachedFactory;
+
+        private readonly object connectLock = new object();
+
+        private readonly ConcurrentQueue<Action> eventQueue = new ConcurrentQueue<Action>();
+
+        private readonly object eventQueueLock = new object();
+
+        private readonly EventServiceManager eventServiceManager = new EventServiceManager();
 
         private readonly ILog log = LogManager.GetLogger<Client>();
 
@@ -87,6 +96,8 @@ namespace ClosetRpc
         /// </returns>
         public IRpcResult CallService(IRpcCallBuilder rpcCallBuilder)
         {
+            this.EnsureConnection();
+
             uint requestId;
             lock (this.requestIdLock)
             {
@@ -118,12 +129,34 @@ namespace ClosetRpc
 
         public void Connect()
         {
-            this.channel = this.transport.Connect();
+            lock (this.connectLock)
+            {
+                if (this.channel != null)
+                {
+                    return;
+                }
+
+                this.channel = this.transport.Connect();
+            }
+
+            this.EnsureReceiverThread();
         }
 
         public IRpcCallBuilder CreateCallBuilder()
         {
             return this.ProtocolObjectFactory.CreateCallBuilder();
+        }
+
+        public bool PumpEvents()
+        {
+            if (!this.eventQueue.TryDequeue(out var pendingEvent))
+            {
+                return false;
+            }
+
+            pendingEvent();
+
+            return !this.eventQueue.IsEmpty;
         }
 
         /// <summary>
@@ -149,9 +182,15 @@ namespace ClosetRpc
 
             this.isRunning = false;
             this.channel.Close();
+            this.channel = null;
             lock (this.pendingCallsLock)
             {
                 Monitor.PulseAll(this.pendingCallsLock);
+            }
+
+            lock (this.eventQueueLock)
+            {
+                Monitor.PulseAll(this.eventQueueLock);
             }
 
             lock (this.receiveThreadInitLock)
@@ -159,6 +198,24 @@ namespace ClosetRpc
                 this.receiverThread?.Join();
                 this.receiverThread = null;
             }
+        }
+
+        public bool WaitForEvents()
+        {
+            while (this.isRunning)
+            {
+                lock (this.eventQueueLock)
+                {
+                    if (!this.eventQueue.IsEmpty)
+                    {
+                        return true;
+                    }
+
+                    Monitor.Wait(this.eventQueueLock, 500);
+                }
+            }
+
+            return false;
         }
 
         #endregion
@@ -210,6 +267,12 @@ namespace ClosetRpc
             }
         }
 
+        private void EnsureConnection()
+        {
+            this.Connect();
+            this.EnsureReceiverThread();
+        }
+
         /// <summary>
         /// Lazily creates a message receiver thread.
         /// </summary>
@@ -235,17 +298,31 @@ namespace ClosetRpc
             // If call portion of the message is filled, then it is an event.
             if (message.Call != null)
             {
-                // Check first if anyone expects the event
-                throw new NotImplementedException();
+                if (!message.Call.IsAsync)
+                {
+                    this.log.WarnFormat(
+                        "Incoming message '{0}.{1}' is an event, but not marked as asynchronous.",
+                        message.Call.ServiceName,
+                        message.Call.MethodName);
+                }
 
                 // Check first if anyone expects the event
-                // var eventService = eventServiceManager.GetService(message.Call.ServiceName);
-                // if (eventService != null) {
-                // lock(this.eventQueueLock) {
-                // eventQueue.Add(new PendingEvent(eventService, response));
-                // Monitor.PulseAll(eventQueueLock);
-                // }
-                // }
+                var eventService = this.eventServiceManager.GetHandler(message.Call.ServiceName);
+                if (eventService != null)
+                {
+                    lock (this.eventQueueLock)
+                    {
+                        this.eventQueue.Enqueue(() => eventService.CallMethod(message.Call));
+                        Monitor.PulseAll(this.eventQueueLock);
+                    }
+                }
+                else
+                {
+                    this.log.DebugFormat(
+                        "Unexpected event '{0}.{1}'",
+                        message.Call.ServiceName,
+                        message.Call.MethodName);
+                }
             }
             else if (message.Result != null)
             {

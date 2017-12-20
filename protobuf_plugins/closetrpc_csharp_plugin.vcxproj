@@ -143,6 +143,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\shared\closetrpc_types.pb.cc" />
+    <ClCompile Include="src\csharp\csharp_event_proxy_generator.cpp" />
     <ClCompile Include="src\csharp\csharp_interface_generator.cpp" />
     <ClCompile Include="src\csharp\csharp_proxy_generator.cpp" />
     <ClCompile Include="src\csharp\csharp_stub_generator.cpp" />

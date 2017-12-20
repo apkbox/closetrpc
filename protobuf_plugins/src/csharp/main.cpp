@@ -17,6 +17,8 @@
 #include "google/protobuf/io/printer.h"
 #include "google/protobuf/io/zero_copy_stream.h"
 
+#include "closetrpc_types.pb.h"
+
 #include "common/generator_utils.h"
 
 namespace pb = google::protobuf;
@@ -46,9 +48,22 @@ bool NanoRpcCppGenerator::Generate(const pb::FileDescriptor *file,
   pb::io::Printer printer(output_stream.get(), '$');
 
   GetSourcePrologue(printer, *file);
+
   GetInterfaceDefinitions(printer, *file);
   GetStubDefinitions(printer, *file);
   GetProxyDefinitions(printer, *file);
+
+  //printer.Indent();
+  //printer.Print("#region Event classes\n\n");
+  //for (int i = 0; i < file->service_count(); ++i) {
+  //  const auto &service = *file->service(i);
+  //  if (service.options().HasExtension(nanorpc::event_source))
+  //    GenerateEventProxy(printer, service);
+  //}
+
+  //printer.Print("#endregion\n\n");
+  //printer.Outdent();
+
   GetSourceEpilogue(printer, *file);
 
   return true;

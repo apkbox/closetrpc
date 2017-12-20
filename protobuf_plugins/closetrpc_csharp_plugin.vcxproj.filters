@@ -33,6 +33,9 @@
     <ClCompile Include="..\shared\closetrpc_types.pb.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\csharp\csharp_event_proxy_generator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\csharp\csharp_generator.h">

@@ -15,7 +15,7 @@ namespace closetrpc_csharp_codegen {
 
 namespace pb = ::google::protobuf;
 
-void GenerateProxyMethods(pb::io::Printer &printer,
+void GenerateEventProxyMethods(pb::io::Printer &printer,
                           const pb::ServiceDescriptor &service) {
   std::map<std::string, std::string> vars;
 
@@ -49,7 +49,8 @@ void GenerateProxyMethods(pb::io::Printer &printer,
       printer.Print(vars, "call.CallData = value.ToByteArray();\n");
 
     printer.Print(vars, "var result = this.client.CallService(call);\n");
-    printer.Print(vars, "if (result.Status != $rpc_status_type$.Succeeded)\n{\n");
+    printer.Print(vars,
+                  "if (result.Status != $rpc_status_type$.Succeeded)\n{\n");
     printer.Indent();
     printer.Print(vars, "throw new Exception(); // TODO: Be more specific\n");
     printer.Outdent();
@@ -65,7 +66,7 @@ void GenerateProxyMethods(pb::io::Printer &printer,
   }
 }
 
-void GenerateProxy(pb::io::Printer &printer,
+void GenerateEventProxy(pb::io::Printer &printer,
                    const pb::ServiceDescriptor &service) {
   std::map<std::string, std::string> vars;
 
@@ -79,33 +80,15 @@ void GenerateProxy(pb::io::Printer &printer,
   vars["rpc_client_type"] = kRpcClientType;
 
   // clang-format off
-  printer.Print(vars, "public class $proxy_name$\n{\n");
-  printer.Indent();
-  printer.Print(vars, "private static readonly string ServiceName = \"$service_full_name$\";\n\n");
-  printer.Print(vars, "private readonly $rpc_client_type$ client;\n\n");
-  printer.Print(vars, "public $proxy_name$($rpc_client_type$ client)\n{\n");
-  printer.Indent();
-  printer.Print(vars, "this.client = client;\n");
-  printer.Outdent();
-  printer.Print(vars, "}\n\n");
+    printer.Print(vars, "public class $proxy_name$\n{\n");
+    printer.Indent();
+    printer.Print(vars, "private static readonly string ServiceName = \"$service_full_name$\";\n\n");
 
-  GenerateProxyMethods(printer, service);
+    GenerateEventProxyMethods(printer, service);
 
-  printer.Outdent();
-  printer.Print(vars, "}\n\n");
+    printer.Outdent();
+    printer.Print(vars, "}\n\n");
   // clang-format on
-}
-
-void GetProxyDefinitions(pb::io::Printer &printer,
-                         const pb::FileDescriptor &file) {
-  std::map<std::string, std::string> vars;
-  printer.Indent();
-  for (int i = 0; i < file.service_count(); ++i) {
-    const auto &service = *file.service(i);
-    if (!service.options().HasExtension(nanorpc::event_source))
-      GenerateProxy(printer, service);
-  }
-  printer.Outdent();
 }
 
 }  // namespace closetrpc_csharp_codegen

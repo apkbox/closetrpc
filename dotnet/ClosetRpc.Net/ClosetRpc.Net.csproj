@@ -50,9 +50,12 @@
     <Compile Include="Channel.cs" />
     <Compile Include="ChannelStatus.cs" />
     <Compile Include="Client.cs" />
+    <Compile Include="EventServiceManager.cs" />
     <Compile Include="GlobalEventSource.cs" />
     <Compile Include="GlobalObjectManager.cs" />
     <Compile Include="IChannel.cs" />
+    <Compile Include="IEventHandler.cs" />
+    <Compile Include="IEventHandlerStub.cs" />
     <Compile Include="IRpcCallBuilder.cs" />
     <Compile Include="IClientTransport.cs" />
     <Compile Include="IObjectManager.cs" />
