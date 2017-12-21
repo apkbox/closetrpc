@@ -13,7 +13,7 @@ namespace ClosetRpc
     {
         #region Public Methods and Operators
 
-        void SendEvent(IRpcCallBuilder rpcCall);
+        void SendEvent(RpcCallParameters rpcCall);
 
         #endregion
     }

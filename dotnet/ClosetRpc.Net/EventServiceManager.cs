@@ -27,7 +27,8 @@ namespace ClosetRpc
 
         public IEventHandlerStub GetHandler(string name)
         {
-            if (this.services.TryGetValue(name, out var handler))
+            IEventHandlerStub handler;
+            if (this.services.TryGetValue(name, out handler))
             {
                 return handler;
             }
@@ -39,7 +40,7 @@ namespace ClosetRpc
         {
             if (handler == null)
             {
-                throw new ArgumentNullException(nameof(handler));
+                throw new ArgumentNullException("handler");
             }
 
             this.RegisterHandler(handler, handler.Name);
@@ -49,12 +50,12 @@ namespace ClosetRpc
         {
             if (eventHandler == null)
             {
-                throw new ArgumentNullException(nameof(eventHandler));
+                throw new ArgumentNullException("eventHandler");
             }
 
             if (eventServiceName == null)
             {
-                throw new ArgumentNullException(nameof(eventServiceName));
+                throw new ArgumentNullException("eventServiceName");
             }
 
             this.services.Add(eventServiceName, eventHandler);

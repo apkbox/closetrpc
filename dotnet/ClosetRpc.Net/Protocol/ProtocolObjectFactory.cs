@@ -14,16 +14,19 @@ namespace ClosetRpc.Protocol
 
     internal class ProtocolObjectFactory : IProtocolObjectFactory
     {
+        #region Constants
+
+        private const byte HasCallFlag = 0x01;
+
+        private const byte HasResultFlag = 0x02;
+
+        #endregion
+
         #region Public Methods and Operators
 
-        public IRpcCall BuildCall(IRpcCallBuilder callBuilder)
+        public IRpcCall BuildCall(RpcCallParameters callParameters)
         {
-            return new RpcCall((RpcCallBuilder)callBuilder);
-        }
-
-        public IRpcCallBuilder CreateCallBuilder()
-        {
-            return new RpcCallBuilder();
+            return new RpcCall(callParameters);
         }
 
         public IRpcCall CreateRpcCall()
@@ -43,12 +46,12 @@ namespace ClosetRpc.Protocol
                 var message = new RpcMessage();
                 message.RequestId = reader.ReadUInt32();
                 var contentFlags = reader.ReadByte();
-                if ((contentFlags & 0x01) != 0)
+                if ((contentFlags & ProtocolObjectFactory.HasCallFlag) != 0)
                 {
                     message.Call = new RpcCall(reader);
                 }
 
-                if ((contentFlags & 0x02) != 0)
+                if ((contentFlags & ProtocolObjectFactory.HasResultFlag) != 0)
                 {
                     message.Result = new RpcResult(reader);
                 }
@@ -62,7 +65,10 @@ namespace ClosetRpc.Protocol
             using (var writer = new BinaryWriter(stream, Encoding.UTF8, true))
             {
                 writer.Write(requestId);
-                var contentFlags = (byte)((call != null ? 0x01 : 0) | (result != null ? 0x02 : 0));
+
+                byte contentFlags = 0;
+                contentFlags |= call != null ? ProtocolObjectFactory.HasCallFlag : (byte)0;
+                contentFlags |= result != null ? ProtocolObjectFactory.HasResultFlag : (byte)0;
                 writer.Write(contentFlags);
 
                 if (call != null)

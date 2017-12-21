@@ -16,58 +16,52 @@ namespace closetrpc_csharp_codegen {
 namespace pb = ::google::protobuf;
 
 void GenerateEventProxyMethods(pb::io::Printer &printer,
-                          const pb::ServiceDescriptor &service) {
+                               const pb::ServiceDescriptor &service) {
   std::map<std::string, std::string> vars;
 
   vars["rpc_status_type"] = kRpcStatusType;
+  vars["rpc_call_param_type"] = kRpcCallParametersType;
+  vars["rpc_event_source_type"] = kRpcEventSourceType;
 
   for (int i = 0; i < service.method_count(); ++i) {
     const auto &method = *service.method(i);
-    vars["method_signature"] = GetMethodSignature(method, false);
-    printer.Print(vars, "public $method_signature$\n{\n");
+
+    if (i > 0)
+      printer.Print("\n");
+
+    printer.Print("public $method_signature$\n{\n", "method_signature",
+                  GetMethodSignature(method, MethodSignatureType::EventProxy));
+
     printer.Indent();
+
     vars["method_name"] = method.name();
     vars["proxy_name"] = GetProxyName(method.service()->name());
     vars["service_name"] = method.service()->name();
 
     vars["input_type_name"] = method.input_type()->name();
-    bool has_input = method.input_type()->full_name() !=
-                     pb::Empty::descriptor()->full_name();
+    bool has_input = !IsVoidType(method.input_type());
 
     vars["output_type_name"] = method.output_type()->name();
-    bool has_output = method.output_type()->full_name() !=
-                      pb::Empty::descriptor()->full_name();
+    bool has_output = !IsVoidType(method.output_type());
+    // TODO: if (has_output) error "Events cannot have return type";
 
-    printer.Print(vars, "var call = this.client.CreateCallBuilder();\n");
+    printer.Print(vars, "var call = new $rpc_call_param_type$();\n");
     printer.Print(vars, "call.ServiceName = $proxy_name$.ServiceName;\n");
     printer.Print(vars, "call.MethodName = \"$method_name$\";\n");
-
-    if (method.options().HasExtension(nanorpc::async))
-      printer.Print(vars, "call.IsAsync = true;\n");
+    printer.Print(vars, "call.IsAsync = true;\n");
 
     if (has_input)
       printer.Print(vars, "call.CallData = value.ToByteArray();\n");
 
-    printer.Print(vars, "var result = this.client.CallService(call);\n");
-    printer.Print(vars,
-                  "if (result.Status != $rpc_status_type$.Succeeded)\n{\n");
-    printer.Indent();
-    printer.Print(vars, "throw new Exception(); // TODO: Be more specific\n");
-    printer.Outdent();
-    printer.Print(vars, "}\n\n");
+    printer.Print(vars, "eventSource.SendEvent(call);\n");
 
-    if (has_output) {
-      printer.Print(vars, "var returnValue = new $output_type_name$();\n");
-      printer.Print(vars, "returnValue.MergeFrom(result.ResultData);\n");
-      printer.Print(vars, "return returnValue;\n");
-    }
     printer.Outdent();
-    printer.Print(vars, "}\n\n");
+    printer.Print(vars, "}\n");
   }
 }
 
 void GenerateEventProxy(pb::io::Printer &printer,
-                   const pb::ServiceDescriptor &service) {
+                        const pb::ServiceDescriptor &service) {
   std::map<std::string, std::string> vars;
 
   vars["proxy_name"] = GetProxyName(service.name());

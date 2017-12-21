@@ -42,7 +42,8 @@ namespace ClosetRpc
                 return null;
             }
 
-            if (this.instances.TryGetValue(objectId, out var service))
+            IRpcServiceStub service;
+            if (this.instances.TryGetValue(objectId, out service))
             {
                 return service;
             }
@@ -52,7 +53,8 @@ namespace ClosetRpc
 
         public IRpcServiceStub GetService(string serviceName)
         {
-            if (this.services.TryGetValue(serviceName, out var objectId))
+            ulong objectId;
+            if (this.services.TryGetValue(serviceName, out objectId))
             {
                 return this.GetInstance(objectId);
             }
@@ -64,7 +66,7 @@ namespace ClosetRpc
         {
             if (instance == null)
             {
-                throw new ArgumentNullException(nameof(instance));
+                throw new ArgumentNullException("instance");
             }
 
             ulong objectId;
@@ -91,12 +93,12 @@ namespace ClosetRpc
         {
             if (service == null)
             {
-                throw new ArgumentNullException(nameof(service));
+                throw new ArgumentNullException("service");
             }
 
             if (serviceName == null)
             {
-                throw new ArgumentNullException(nameof(serviceName));
+                throw new ArgumentNullException("serviceName");
             }
 
             if (this.services.ContainsKey(serviceName))

@@ -24,13 +24,13 @@ namespace ClosetRpc.Protocol
             this.Deserialize(reader);
         }
 
-        public RpcCall(RpcCallBuilder callBuilder)
+        public RpcCall(RpcCallParameters callParameters)
         {
-            this.IsAsync = callBuilder.IsAsync;
-            this.ServiceName = callBuilder.ServiceName;
-            this.MethodName = callBuilder.MethodName;
-            this.ObjectId = callBuilder.ObjectId;
-            this.CallData = callBuilder.CallData;
+            this.IsAsync = callParameters.IsAsync;
+            this.ServiceName = callParameters.ServiceName;
+            this.MethodName = callParameters.MethodName;
+            this.ObjectId = callParameters.ObjectId;
+            this.CallData = callParameters.CallData;
         }
 
         #endregion

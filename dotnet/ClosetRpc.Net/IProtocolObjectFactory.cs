@@ -15,9 +15,7 @@ namespace ClosetRpc
     {
         #region Public Methods and Operators
 
-        IRpcCall BuildCall(IRpcCallBuilder callBuilder);
-
-        IRpcCallBuilder CreateCallBuilder();
+        IRpcCall BuildCall(RpcCallParameters callParameters);
 
         IRpcResult CreateRpcResult();
 

@@ -31,7 +31,7 @@ namespace ClosetRpc
 
         #region Public Methods and Operators
 
-        public void SendEvent(IRpcCallBuilder rpcCall)
+        public void SendEvent(RpcCallParameters rpcCall)
         {
             this.server.SendEvent(rpcCall, this.channel);
         }

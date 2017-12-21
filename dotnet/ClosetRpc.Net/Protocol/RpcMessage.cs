@@ -19,9 +19,21 @@ namespace ClosetRpc.Protocol
 
         #region Explicit Interface Properties
 
-        IRpcCall IRpcMessage.Call => this.Call;
+        IRpcCall IRpcMessage.Call
+        {
+            get
+            {
+                return this.Call;
+            }
+        }
 
-        IRpcResult IRpcMessage.Result => this.Result;
+        IRpcResult IRpcMessage.Result
+        {
+            get
+            {
+                return this.Result;
+            }
+        }
 
         #endregion
 

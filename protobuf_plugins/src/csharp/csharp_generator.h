@@ -6,6 +6,7 @@
 
 namespace google {
 namespace protobuf {
+class Descriptor;
 class FileDescriptor;
 class ServiceDescriptor;
 class MethodDescriptor;
@@ -26,6 +27,14 @@ const std::string kRpcCallType = "global::ClosetRpc.IRpcCall";
 const std::string kRpcResultType = "global::ClosetRpc.IRpcResult";
 const std::string kRpcClientType = "global::ClosetRpc.Client";
 const std::string kRpcStatusType = "global::ClosetRpc.RpcStatus";
+const std::string kRpcEventSourceType = "global::ClosetRpc.IEventSource";
+const std::string kRpcCallParametersType = "global::ClosetRpc.RpcCallParameters";
+
+enum class MethodSignatureType {
+  Stub,
+  Proxy,
+  EventProxy
+};
 
 inline std::string GetInterfaceName(const std::string &service_name) {
   return service_name + "Interface";
@@ -49,8 +58,9 @@ inline std::string GetProxyName(const std::string &service_name) {
 
 // csharp_generator.cpp
 std::string GetFileNamespace(const pb::FileDescriptor *descriptor);
-
-std::string GetMethodSignature(const pb::MethodDescriptor &method, bool server);
+bool IsVoidType(const pb::Descriptor *descriptor);
+std::string GetMethodSignature(const pb::MethodDescriptor &method,
+                               MethodSignatureType type);
 void GetSourcePrologue(pb::io::Printer &printer,
                        const pb::FileDescriptor &file);
 void GetSourceEpilogue(pb::io::Printer &printer,

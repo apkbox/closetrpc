@@ -31,7 +31,8 @@ namespace ClosetRpc
 
         public IRpcServiceStub GetService(string name)
         {
-            if (this.services.TryGetValue(name, out var service))
+            IRpcServiceStub service;
+            if (this.services.TryGetValue(name, out service))
             {
                 return service;
             }
@@ -43,7 +44,7 @@ namespace ClosetRpc
         {
             if (service == null)
             {
-                throw new ArgumentNullException(nameof(service));
+                throw new ArgumentNullException("service");
             }
 
             this.RegisterService(service, service.Name);
@@ -53,12 +54,12 @@ namespace ClosetRpc
         {
             if (service == null)
             {
-                throw new ArgumentNullException(nameof(service));
+                throw new ArgumentNullException("service");
             }
 
             if (serviceName == null)
             {
-                throw new ArgumentNullException(nameof(serviceName));
+                throw new ArgumentNullException("serviceName");
             }
 
             this.services.Add(serviceName, service);

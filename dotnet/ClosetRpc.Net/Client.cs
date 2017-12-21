@@ -69,7 +69,13 @@ namespace ClosetRpc
 
         #region Properties
 
-        protected IProtocolObjectFactory ProtocolObjectFactory => this.cachedFactory.Value;
+        protected IProtocolObjectFactory ProtocolObjectFactory
+        {
+            get
+            {
+                return this.cachedFactory.Value;
+            }
+        }
 
         #endregion
 
@@ -78,7 +84,7 @@ namespace ClosetRpc
         /// <summary>
         /// Sends request to the server.
         /// </summary>
-        /// <param name="rpcCallBuilder">Call parameters.</param>
+        /// <param name="rpcCallParameters">Call parameters.</param>
         /// <returns>
         /// <para>
         /// Returns <see cref="RpcStatus.Succeeded"/> on success or error status
@@ -94,7 +100,7 @@ namespace ClosetRpc
         /// received response.
         /// </para>
         /// </returns>
-        public IRpcResult CallService(IRpcCallBuilder rpcCallBuilder)
+        public IRpcResult CallService(RpcCallParameters rpcCallParameters)
         {
             this.EnsureConnection();
 
@@ -105,13 +111,13 @@ namespace ClosetRpc
             }
 
             IRpcResult result;
-            if (rpcCallBuilder.IsAsync)
+            if (rpcCallParameters.IsAsync)
             {
-                result = this.SendAsyncRequest(requestId, rpcCallBuilder);
+                result = this.SendAsyncRequest(requestId, rpcCallParameters);
             }
             else
             {
-                result = this.SendSyncRequest(requestId, rpcCallBuilder);
+                result = this.SendSyncRequest(requestId, rpcCallParameters);
                 if (result == null)
                 {
                     return this.AwaitResult(requestId);
@@ -142,14 +148,10 @@ namespace ClosetRpc
             this.EnsureReceiverThread();
         }
 
-        public IRpcCallBuilder CreateCallBuilder()
-        {
-            return this.ProtocolObjectFactory.CreateCallBuilder();
-        }
-
         public bool PumpEvents()
         {
-            if (!this.eventQueue.TryDequeue(out var pendingEvent))
+            Action pendingEvent;
+            if (!this.eventQueue.TryDequeue(out pendingEvent))
             {
                 return false;
             }
@@ -195,7 +197,12 @@ namespace ClosetRpc
 
             lock (this.receiveThreadInitLock)
             {
-                this.receiverThread?.Join();
+                var thread = this.receiverThread;
+                if (thread != null)
+                {
+                    thread.Join();
+                }
+
                 this.receiverThread = null;
             }
         }
@@ -251,7 +258,8 @@ namespace ClosetRpc
             {
                 while (true)
                 {
-                    if (this.pendingCalls.TryGetValue(requestId, out var pendingCall))
+                    PendingCall pendingCall;
+                    if (this.pendingCalls.TryGetValue(requestId, out pendingCall))
                     {
                         if (pendingCall.Status == PendingCallStatus.Received
                             || pendingCall.Status == PendingCallStatus.Cancelled)
@@ -328,7 +336,8 @@ namespace ClosetRpc
             {
                 lock (this.pendingCallsLock)
                 {
-                    if (!this.pendingCalls.TryGetValue(message.RequestId, out var pendingCall))
+                    PendingCall pendingCall;
+                    if (!this.pendingCalls.TryGetValue(message.RequestId, out pendingCall))
                     {
                         this.log.WarnFormat("Pending message {0} not found. Message ignored.", message.RequestId);
                         return;
@@ -378,14 +387,14 @@ namespace ClosetRpc
         /// Sends asynchronous request to the server.
         /// </summary>
         /// <param name="requestId">Request ID.</param>
-        /// <param name="callBuilder">Call parameters.</param>
+        /// <param name="callParameters">Call parameters.</param>
         /// <returns>
         /// Returns <c>null</c> on success or result containing error status
         /// on failure.
         /// </returns>
-        private IRpcResult SendAsyncRequest(uint requestId, IRpcCallBuilder callBuilder)
+        private IRpcResult SendAsyncRequest(uint requestId, RpcCallParameters callParameters)
         {
-            if (!callBuilder.IsAsync)
+            if (!callParameters.IsAsync)
             {
                 throw new InvalidOperationException("Call is not asychronous.");
             }
@@ -393,7 +402,7 @@ namespace ClosetRpc
             IRpcResult result = null;
             try
             {
-                var call = this.ProtocolObjectFactory.BuildCall(callBuilder);
+                var call = this.ProtocolObjectFactory.BuildCall(callParameters);
                 this.ProtocolObjectFactory.WriteMessage(this.channel.Stream, requestId, call, null);
                 this.log.TraceFormat("Asynchronous message sent {0}.", requestId);
             }
@@ -411,14 +420,14 @@ namespace ClosetRpc
         /// Sends specified request to the server.
         /// </summary>
         /// <param name="requestId">Request ID.</param>
-        /// <param name="callBuilder">Call parameters.</param>
+        /// <param name="callParameters">Call parameters.</param>
         /// <returns>
         /// Returns <c>null</c> on success or result containing error status
         /// on failure.
         /// </returns>
-        private IRpcResult SendSyncRequest(uint requestId, IRpcCallBuilder callBuilder)
+        private IRpcResult SendSyncRequest(uint requestId, RpcCallParameters callParameters)
         {
-            if (callBuilder.IsAsync)
+            if (callParameters.IsAsync)
             {
                 throw new InvalidOperationException("Call must be synchronous.");
             }
@@ -433,7 +442,7 @@ namespace ClosetRpc
 
             try
             {
-                var call = this.ProtocolObjectFactory.BuildCall(callBuilder);
+                var call = this.ProtocolObjectFactory.BuildCall(callParameters);
                 this.ProtocolObjectFactory.WriteMessage(this.channel.Stream, requestId, call, null);
                 this.log.TraceFormat("Message sent {0}.", requestId);
             }

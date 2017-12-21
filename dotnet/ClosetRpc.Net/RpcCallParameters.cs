@@ -1,15 +1,15 @@
 ﻿// --------------------------------------------------------------------------------
-// <copyright file="RpcCallBuilder.cs" company="Private">
+// <copyright file="RpcCallParameters.cs" company="Private">
 //   Copyright (c) Alex Kozlov.
 // </copyright>
 // <summary>
-//   Defines the RpcCallBuilder type.
+//   Defines the RpcCallParameters type.
 // </summary>
 // --------------------------------------------------------------------------------
 
-namespace ClosetRpc.Protocol
+namespace ClosetRpc
 {
-    internal class RpcCallBuilder : IRpcCallBuilder
+    public class RpcCallParameters
     {
         #region Public Properties
 

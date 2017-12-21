@@ -50,22 +50,30 @@ namespace ClosetRpc
             this.cachedFactory = new Lazy<IProtocolObjectFactory>(
                 this.CreateProtocolObjectFactory,
                 LazyThreadSafetyMode.ExecutionAndPublication);
+            this.EventSource = new GlobalEventSource(this);
         }
+
+        #endregion
+
+        #region Public Properties
+
+        public IEventSource EventSource { get; private set; }
 
         #endregion
 
         #region Properties
 
-        protected IProtocolObjectFactory ProtocolObjectFactory => this.cachedFactory.Value;
+        protected IProtocolObjectFactory ProtocolObjectFactory
+        {
+            get
+            {
+                return this.cachedFactory.Value;
+            }
+        }
 
         #endregion
 
         #region Public Methods and Operators
-
-        public IRpcCallBuilder CreateCallBuilder()
-        {
-            return this.ProtocolObjectFactory.CreateCallBuilder();
-        }
 
         public void RegisterService(IRpcService service)
         {
@@ -180,9 +188,9 @@ namespace ClosetRpc
 
         #region Methods
 
-        internal void SendEvent(IRpcCallBuilder callBuilder, IChannel channel)
+        internal void SendEvent(RpcCallParameters callParameters, IChannel channel)
         {
-            var cachedCall = this.ProtocolObjectFactory.BuildCall(callBuilder);
+            var cachedCall = this.ProtocolObjectFactory.BuildCall(callParameters);
             if (channel != null)
             {
                 this.ProtocolObjectFactory.WriteMessage(channel.Stream, 0, cachedCall, null);

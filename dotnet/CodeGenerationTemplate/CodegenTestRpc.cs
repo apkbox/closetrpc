@@ -140,7 +140,7 @@ namespace CodegenTest
 
         public void Method_V_V()
         {
-            var call = this.client.CreateCallBuilder();
+            var call = new RpcCallParameters();
             call.ServiceName = TestServiceInterface_Proxy.ServiceName;
             call.MethodName = "Method_V_V";
             var result = this.client.CallService(call);
@@ -152,7 +152,7 @@ namespace CodegenTest
 
         public void Method_V_M(StructType value)
         {
-            var call = this.client.CreateCallBuilder();
+            var call = new RpcCallParameters();
             call.ServiceName = TestServiceInterface_Proxy.ServiceName;
             call.MethodName = "Method_V_M";
             call.CallData = value.ToByteArray();
@@ -165,7 +165,7 @@ namespace CodegenTest
 
         public StructType Method_M_V()
         {
-            var call = this.client.CreateCallBuilder();
+            var call = new RpcCallParameters();
             call.ServiceName = TestServiceInterface_Proxy.ServiceName;
             call.MethodName = "Method_M_V";
             var result = this.client.CallService(call);
@@ -181,7 +181,7 @@ namespace CodegenTest
 
         public StructType Method_M_M(IServerContext context, StructType value)
         {
-            var call = this.client.CreateCallBuilder();
+            var call = new RpcCallParameters();
             call.ServiceName = TestServiceInterface_Proxy.ServiceName;
             call.MethodName = "Method_M_M";
             call.CallData = value.ToByteArray();
@@ -198,7 +198,7 @@ namespace CodegenTest
 
         public void AsyncMethod_V_V(IServerContext context)
         {
-            var call = this.client.CreateCallBuilder();
+            var call = new RpcCallParameters();
             call.ServiceName = TestServiceInterface_Proxy.ServiceName;
             call.MethodName = "AsyncMethod_V_V";
             call.IsAsync = true;
@@ -211,7 +211,7 @@ namespace CodegenTest
 
         public void AsyncMethod_V_M(IServerContext context, StructType value)
         {
-            var call = this.client.CreateCallBuilder();
+            var call = new RpcCallParameters();
             call.ServiceName = TestServiceInterface_Proxy.ServiceName;
             call.MethodName = "AsyncMethod_V_M";
             call.IsAsync = true;

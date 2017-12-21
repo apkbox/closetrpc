@@ -56,7 +56,7 @@
     <Compile Include="IChannel.cs" />
     <Compile Include="IEventHandler.cs" />
     <Compile Include="IEventHandlerStub.cs" />
-    <Compile Include="IRpcCallBuilder.cs" />
+    <Compile Include="RpcCallParameters.cs" />
     <Compile Include="IClientTransport.cs" />
     <Compile Include="IObjectManager.cs" />
     <Compile Include="IProtocolObjectFactory.cs" />
@@ -75,7 +75,6 @@
     <Compile Include="IEventSource.cs" />
     <Compile Include="Protocol\ProtocolObjectFactory.cs" />
     <Compile Include="Protocol\RpcCall.cs" />
-    <Compile Include="Protocol\RpcCallBuilder.cs" />
     <Compile Include="Protocol\RpcMessage.cs" />
     <Compile Include="Protocol\RpcResult.cs" />
     <Compile Include="Protocol\SerializationHelpers.cs" />

@@ -22,12 +22,10 @@ void GenerateServiceMethodCall(pb::io::Printer &printer,
   vars["method_name"] = method.name();
 
   vars["input_type_name"] = method.input_type()->name();
-  bool has_input =
-      method.input_type()->full_name() != pb::Empty::descriptor()->full_name();
+  bool has_input = !IsVoidType(method.input_type());
 
   vars["output_type_name"] = method.output_type()->name();
-  bool has_output =
-      method.output_type()->full_name() != pb::Empty::descriptor()->full_name();
+  bool has_output = !IsVoidType(method.output_type());
 
   if (has_input) {
     printer.Print(vars, "var input = new $input_type_name$();\n");
@@ -168,12 +166,18 @@ void GenerateServiceBase(pb::io::Printer &printer,
 
   for (int i = 0; i < service.method_count(); ++i) {
     const auto &method = *service.method(i);
-    vars["method_signature"] = GetMethodSignature(method, true);
-    printer.Print(vars, "public abstract $method_signature$;\n");
+
+    if (i > 0)
+      printer.Print("\n");
+
+    printer.Print("public abstract $method_signature$;\n", "method_signature",
+                  GetMethodSignature(method, MethodSignatureType::Stub));
   }
+
   printer.Outdent();
   printer.Print(vars, "}\n\n");
   // clang-format on
+
 }
 
 void GetStubDefinitions(pb::io::Printer &printer,

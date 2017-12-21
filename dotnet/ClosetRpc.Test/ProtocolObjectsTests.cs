@@ -49,7 +49,7 @@ namespace ClosetRpc.Test
         public void CallBuilderDefaults()
         {
             var p = new ProtocolObjectFactory();
-            var c = p.CreateCallBuilder();
+            var c = new RpcCallParameters();
 
             Assert.That(c, Is.Not.Null);
             Assert.That(c.ServiceName, Is.Null);
@@ -63,7 +63,7 @@ namespace ClosetRpc.Test
         public void CallBuilderProperties()
         {
             var p = new ProtocolObjectFactory();
-            var c = p.CreateCallBuilder();
+            var c = new RpcCallParameters();
 
             Assume.That(c, Is.Not.Null);
 
@@ -110,7 +110,7 @@ namespace ClosetRpc.Test
             byte[] buffer;
             using (var s = new MemoryStream())
             {
-                var call = p.BuildCall(p.CreateCallBuilder());
+                var call = p.BuildCall(new RpcCallParameters());
                 p.WriteMessage(s, this.requestId, call, null);
                 buffer = s.ToArray();
             }
@@ -166,7 +166,7 @@ namespace ClosetRpc.Test
             byte[] buffer;
             using (var s = new MemoryStream())
             {
-                var call = p.CreateCallBuilder();
+                var call = new RpcCallParameters();
                 call.ServiceName = this.serviceName;
                 call.MethodName = this.methodName;
                 call.IsAsync = this.isAsync;

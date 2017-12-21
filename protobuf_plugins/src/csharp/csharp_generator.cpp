@@ -71,8 +71,13 @@ std::string GetFileNamespace(const pb::FileDescriptor *descriptor) {
   return UnderscoresToCamelCase(descriptor->package(), true, true);
 }
 
+bool IsVoidType(const pb::Descriptor *type) {
+  return type == nullptr ||
+         type->full_name() == pb::Empty::descriptor()->full_name();
+}
+
 std::string GetMethodSignature(const pb::MethodDescriptor &method,
-                               bool server) {
+                               MethodSignatureType type) {
   std::string output;
   {
     // Scope the output stream so it closes and finalizes output to the string.
@@ -81,22 +86,26 @@ std::string GetMethodSignature(const pb::MethodDescriptor &method,
     std::map<std::string, std::string> vars;
 
     vars["server_context_type"] = kServerContextType;
+    vars["event_source_type"] = kRpcEventSourceType;
     vars["method_name"] = method.name();
     vars["output_type_name"] = method.output_type()->name();
 
-    if (method.output_type()->full_name() ==
-        pb::Empty::descriptor()->full_name())
+    if (IsVoidType(method.output_type()))
       vars["output_type_name"] = "void";
 
     printer.Print(vars, "$output_type_name$ $method_name$(");
-    if (server)
-      printer.Print(vars, "$server_context_type$ context");
 
-    if (method.input_type() != nullptr &&
-        method.input_type()->full_name() !=
-            pb::Empty::descriptor()->full_name()) {
+    bool has_context_argument = true;
+    if (type == MethodSignatureType::Stub)
+      printer.Print(vars, "$server_context_type$ context");
+    else if (type == MethodSignatureType::EventProxy)
+      printer.Print(vars, "$event_source_type$ eventSource");
+    else
+      has_context_argument = false;
+
+    if (!IsVoidType(method.input_type())) {
       vars["input_type_name"] = method.input_type()->name();
-      if (server)
+      if (has_context_argument)
         printer.Print(", ");
       printer.Print(vars, "$input_type_name$ value");
     }

@@ -34,11 +34,11 @@ namespace MessagingTestClient
 
         public int Ping(int value)
         {
-            var callBuilder = this.client.CreateCallBuilder();
-            callBuilder.ServiceName = "IPingPong";
-            callBuilder.MethodName = "Ping";
-            callBuilder.CallData = BitConverter.GetBytes(value);
-            var result = this.client.CallService(callBuilder);
+            var call = new RpcCallParameters();
+            call.ServiceName = "IPingPong";
+            call.MethodName = "Ping";
+            call.CallData = BitConverter.GetBytes(value);
+            var result = this.client.CallService(call);
             if (result.Status == RpcStatus.ChannelFailure)
             {
                 throw new RpcException(result.Status);

@@ -68,7 +68,11 @@ namespace ClosetRpc
         public void Dispose()
         {
             this.log.DebugFormat("Disposing channel {0}", this.channelId);
-            this.tcpClient?.Dispose();
+            var client = this.tcpClient;
+            if (client != null)
+            {
+                client.Dispose();
+            }
         }
 
         #endregion

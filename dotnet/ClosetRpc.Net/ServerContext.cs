@@ -21,11 +21,9 @@ namespace ClosetRpc
             this.Channel = channel;
             this.Thread = thread;
             this.ObjectManager = new ObjectManager();
-            this.GlobalEventSource = new GlobalEventSource(server);
+            this.GlobalEventSource = server.EventSource;
             this.LocalEventSource = new LocalEventSource(server, channel);
         }
-
-        public Server Server { get; }
 
         #endregion
 
@@ -33,13 +31,15 @@ namespace ClosetRpc
 
         public IChannel Channel { get; set; }
 
-        public ObjectManager ObjectManager { get; }
+        public IEventSource GlobalEventSource { get; private set; }
+
+        public IEventSource LocalEventSource { get; private set; }
+
+        public ObjectManager ObjectManager { get; private set; }
+
+        public Server Server { get; private set; }
 
         public Thread Thread { get; set; }
-
-        public IEventSource GlobalEventSource { get; }
-
-        public IEventSource LocalEventSource { get; }
 
         #endregion
     }

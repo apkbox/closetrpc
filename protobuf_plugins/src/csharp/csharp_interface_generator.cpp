@@ -25,8 +25,11 @@ void GenerateInterfaceDefinition(pb::io::Printer &printer,
 
   for (int i = 0; i < service.method_count(); ++i) {
     const auto &method = *service.method(i);
-    vars["method_signature"] = GetMethodSignature(method, true);
-    printer.Print(vars, "$method_signature$;\n");
+    if (i > 0)
+      printer.Print("\n");
+
+    printer.Print("$method_signature$;\n", "method_signature",
+                  GetMethodSignature(method, MethodSignatureType::Stub));
   }
 
   printer.Outdent();
