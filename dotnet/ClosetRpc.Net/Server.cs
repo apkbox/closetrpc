@@ -62,6 +62,11 @@ namespace ClosetRpc
 
         #region Public Methods and Operators
 
+        public IRpcCallBuilder CreateCallBuilder()
+        {
+            return this.ProtocolObjectFactory.CreateCallBuilder();
+        }
+
         public void RegisterService(IRpcService service)
         {
             this.log.InfoFormat(
@@ -175,27 +180,28 @@ namespace ClosetRpc
 
         #region Methods
 
-        protected virtual IProtocolObjectFactory CreateProtocolObjectFactory()
-        {
-            return new ProtocolObjectFactory();
-        }
-
         internal void SendEvent(IRpcCallBuilder callBuilder, IChannel channel)
         {
             var cachedCall = this.ProtocolObjectFactory.BuildCall(callBuilder);
-            if(channel != null) {
+            if (channel != null)
+            {
                 this.ProtocolObjectFactory.WriteMessage(channel.Stream, 0, cachedCall, null);
             }
             else
             {
-                lock(activeConnectionsLock)
+                lock (this.activeConnectionsLock)
                 {
-                    foreach(var c in activeConnections)
+                    foreach (var c in this.activeConnections)
                     {
                         this.ProtocolObjectFactory.WriteMessage(c.Channel.Stream, 0, cachedCall, null);
                     }
                 }
             }
+        }
+
+        protected virtual IProtocolObjectFactory CreateProtocolObjectFactory()
+        {
+            return new ProtocolObjectFactory();
         }
 
         private void ConnectionThread(object param)

@@ -15,39 +15,13 @@ namespace ProtobufTestApp
 
     using ProtobufTestApp.Services;
 
-    #region Event classes
-
-    //public class SettingsEvents_Proxy
-    //{
-    //    private static readonly string ServiceName = "services.SettingsEvents";
-
-    //    public void Changed(IEventSource source, SettingList value)
-    //    {
-    //        var call = source.CreateCallBuilder();
-    //        call.ServiceName = SettingsEvents_Proxy.ServiceName;
-    //        call.MethodName = "Changed";
-    //        call.CallData = value.ToByteArray();
-    //        var result = source.SendEvent(call);
-    //        if (result.Status != global::ClosetRpc.RpcStatus.Succeeded)
-    //        {
-    //            throw new Exception(); // TODO: Be more specific
-    //        }
-
-    //    }
-
-    //}
-
-    #endregion
-
-
-
     public class SettingsService : SettingsService_ServiceBase
     {
         #region Fields
 
-        // private SettingsEvents_Proxy settingsEvents = new SettingsEvents_Proxy();
-
         private readonly Dictionary<string, string> settings = new Dictionary<string, string>();
+
+        private SettingsEvents_Proxy settingsEvents = new SettingsEvents_Proxy();
 
         #endregion
 
@@ -77,7 +51,7 @@ namespace ProtobufTestApp
                 settingsList.Item.Add(item);
             }
 
-            // this.settingsEvents.Changed(context.GlobalEventSource, settingsList);
+            this.settingsEvents.Changed(context.GlobalEventSource, settingsList);
         }
 
         #endregion
