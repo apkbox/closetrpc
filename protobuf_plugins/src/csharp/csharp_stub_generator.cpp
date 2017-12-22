@@ -129,13 +129,23 @@ void GenerateStub(pb::io::Printer &printer,
   printer.Print(vars, "public class $stub_class_name$ : $base_class$\n{\n");
   printer.Indent();
 
+  printer.Print(vars, "private readonly $service_interface_name$ impl;\n\n");
+
   printer.Print(vars, "public $stub_class_name$($service_interface_name$ impl)\n{\n");
   printer.Indent();
-  printer.Print(vars, "this.Impl = impl;\n");
+  printer.Print(vars, "this.impl = impl;\n");
   printer.Outdent();
   printer.Print(vars, "}\n\n");
 
-  printer.Print(vars, "protected override $service_interface_name$ Impl { get; }\n");
+  printer.Print(vars, "protected override $service_interface_name$ Impl\n{\n");
+  printer.Indent();
+  printer.Print(vars, "get\n{\n");
+  printer.Indent();
+  printer.Print(vars, "return this.impl;\n");
+  printer.Outdent();
+  printer.Print(vars, "}\n");
+  printer.Outdent();
+  printer.Print(vars, "}\n");
 
   printer.Outdent();
   printer.Print(vars, "}\n\n");

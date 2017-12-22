@@ -120,13 +120,23 @@ void GenerateEventStub(pb::io::Printer &printer,
   printer.Print(vars, "public class $stub_class_name$ : $base_class$\n{\n");
   printer.Indent();
 
+  printer.Print(vars, "private readonly $interface_name$ impl;\n\n");
+
   printer.Print(vars, "public $stub_class_name$($interface_name$ impl)\n{\n");
   printer.Indent();
-  printer.Print(vars, "this.Impl = impl;\n");
+  printer.Print(vars, "this.impl = impl;\n");
   printer.Outdent();
   printer.Print(vars, "}\n\n");
 
-  printer.Print(vars, "protected override $interface_name$ Impl { get; }\n");
+  printer.Print(vars, "protected override $interface_name$ Impl\n{\n");
+  printer.Indent();
+  printer.Print(vars, "get\n{\n");
+  printer.Indent();
+  printer.Print(vars, "return this.impl;\n");
+  printer.Outdent();
+  printer.Print(vars, "}\n");
+  printer.Outdent();
+  printer.Print(vars, "}\n");
 
   printer.Outdent();
   printer.Print(vars, "}\n\n");
@@ -180,7 +190,7 @@ void GenerateEventHandlerInvocation(pb::io::Printer &printer,
   vars["input_type_name"] = method.input_type()->name();
   bool has_input = !IsVoidType(method.input_type());
 
-  printer.Print(vars, "var handler = this.$method_name$;\n");
+  printer.Print(vars, "var handler = this.outer.$method_name$;\n");
   printer.Print("if (handler != null)\n{\n");
   printer.Indent();
 
@@ -218,8 +228,16 @@ void GenerateEventHandler(pb::io::Printer &printer,
   vars["base_class"] = GetEventStubBaseName(service.name());
 
   // clang-format off
-  printer.Print(vars, "public class $class_name$ : $base_class$, $interface_name$\n{\n");
+  printer.Print(vars, "public class $class_name$ : $base_class$\n{\n");
   printer.Indent();
+
+  printer.Print(vars, "private readonly $interface_name$ impl;\n\n");
+
+  printer.Print(vars, "public $class_name$()\n{\n");
+  printer.Indent();
+  printer.Print(vars, "this.impl = new EventInterfaceImpl(this);\n");
+  printer.Outdent();
+  printer.Print("}\n\n");
 
   for (int i = 0; i < service.method_count(); ++i) {
     const auto &method = *service.method(i);
@@ -230,14 +248,25 @@ void GenerateEventHandler(pb::io::Printer &printer,
     GenerateEventHandlerField(printer, method);
   }
 
-  printer.Print("\n");
+  printer.Print(vars, "\n");
+
   printer.Print(vars, "protected override $interface_name$ Impl\n{\n");
   printer.Indent();
   printer.Print(vars, "get\n{\n");
   printer.Indent();
-  printer.Print(vars, "return this;\n");
+  printer.Print(vars, "return this.impl;\n");
   printer.Outdent();
   printer.Print(vars, "}\n");
+  printer.Outdent();
+  printer.Print(vars, "}\n\n");
+
+  printer.Print(vars, "private class EventInterfaceImpl : $interface_name$\n{\n");
+  printer.Indent();
+
+  printer.Print(vars, "private readonly $class_name$ outer;\n\n");
+  printer.Print(vars, "public EventInterfaceImpl($class_name$ outer)\n{\n");
+  printer.Indent();
+  printer.Print(vars, "this.outer = outer;\n");
   printer.Outdent();
   printer.Print(vars, "}\n");
 
@@ -249,13 +278,16 @@ void GenerateEventHandler(pb::io::Printer &printer,
 
     printer.Print("\n");
     printer.Print("public $method_signature$\n", "method_signature",
-                  GetMethodSignature(method, ContextType::EventStub));
+      GetMethodSignature(method, ContextType::EventStub));
     printer.Print("{\n");
     printer.Indent();
     GenerateEventHandlerInvocation(printer, method);
     printer.Outdent();
     printer.Print("}\n");
   }
+
+  printer.Outdent();
+  printer.Print(vars, "}\n");
 
   printer.Outdent();
   printer.Print(vars, "}\n\n");

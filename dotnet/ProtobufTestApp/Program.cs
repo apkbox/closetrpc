@@ -66,7 +66,11 @@ namespace ProtobufTestApp
 
         private static void EventHandlerOnChanged(object sender, SettingList settingList)
         {
-            Console.WriteLine("Settings changed!");
+            Console.WriteLine("Notified that settings changed:");
+            foreach (var setting in settingList.Item)
+            {
+                Console.WriteLine("        {0} = {1}", setting.Key, setting.Value);
+            }
         }
 
         static void Main(string[] args)
@@ -88,8 +92,10 @@ namespace ProtobufTestApp
             var transport = new SocketServerTransport(4242);
             var server = new Server(transport);
             Program.serverInstance = server;
-            server.RegisterService(new SettingsService());
+            var service = new SettingsService(server.EventSource);
+            server.RegisterService(service);
             server.Run();
+            service.Dispose();
         }
 
         #endregion
