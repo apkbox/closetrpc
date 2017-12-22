@@ -16,10 +16,13 @@ namespace closetrpc_csharp_codegen {
 namespace pb = ::google::protobuf;
 
 void GenerateInterfaceDefinition(pb::io::Printer &printer,
-                                 const pb::ServiceDescriptor &service) {
+                                 const pb::ServiceDescriptor &service,
+                                 bool event_interface) {
   std::map<std::string, std::string> vars;
 
-  vars["service_interface_name"] = GetInterfaceName(service.name());
+  vars["service_interface_name"] = event_interface
+                                       ? GetEventInterfaceName(service.name())
+                                       : GetInterfaceName(service.name());
   printer.Print(vars, "public interface $service_interface_name$\n{\n");
   printer.Indent();
 
@@ -28,8 +31,9 @@ void GenerateInterfaceDefinition(pb::io::Printer &printer,
     if (i > 0)
       printer.Print("\n");
 
-    printer.Print("$method_signature$;\n", "method_signature",
-                  GetMethodSignature(method, MethodSignatureType::Stub));
+    auto context = event_interface ? ContextType::EventStub : ContextType::Stub;
+    auto signature = GetMethodSignature(method, context);
+    printer.Print("$method_signature$;\n", "method_signature", signature);
   }
 
   printer.Outdent();
@@ -40,15 +44,11 @@ void GetInterfaceDefinitions(pb::io::Printer &printer,
                              const pb::FileDescriptor &file) {
   std::map<std::string, std::string> vars;
 
-  printer.Indent();
-
   for (int si = 0; si < file.service_count(); ++si) {
     const auto &service = *file.service(si);
     if (!service.options().HasExtension(nanorpc::event_source))
-      GenerateInterfaceDefinition(printer, service);
+      GenerateInterfaceDefinition(printer, service, false);
   }
-
-  printer.Outdent();
 }
 
 }  // namespace closetrpc_csharp_codegen

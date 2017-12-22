@@ -92,6 +92,7 @@ void GenerateStubBase(pb::io::Printer &printer,
   // clang-format off
   printer.Print(vars, "public abstract class $stub_base$ : $base_class$\n{\n");
   printer.Indent();
+
   printer.Print(vars, "public string Name\n{\n");
   printer.Indent();
   printer.Print(vars, "get\n{\n");
@@ -109,6 +110,7 @@ void GenerateStubBase(pb::io::Printer &printer,
   GenerateServiceMethodCallDispatch(printer, service);
   printer.Outdent();
   printer.Print(vars, "}\n");
+
   printer.Outdent();
   printer.Print(vars, "}\n\n");
   // clang-format on
@@ -126,12 +128,15 @@ void GenerateStub(pb::io::Printer &printer,
   // clang-format off
   printer.Print(vars, "public class $stub_class_name$ : $base_class$\n{\n");
   printer.Indent();
+
   printer.Print(vars, "public $stub_class_name$($service_interface_name$ impl)\n{\n");
   printer.Indent();
   printer.Print(vars, "this.Impl = impl;\n");
   printer.Outdent();
   printer.Print(vars, "}\n\n");
+
   printer.Print(vars, "protected override $service_interface_name$ Impl { get; }\n");
+
   printer.Outdent();
   printer.Print(vars, "}\n\n");
   // clang-format on
@@ -154,6 +159,7 @@ void GenerateServiceBase(pb::io::Printer &printer,
   // clang-format off
   printer.Print(vars, "public abstract class $class_name$ : $stub_base$, $service_interface_name$\n{\n");
   printer.Indent();
+
   printer.Print(vars, "protected override $service_interface_name$ Impl\n{\n");
   printer.Indent();
   printer.Print(vars, "get\n{\n");
@@ -171,7 +177,7 @@ void GenerateServiceBase(pb::io::Printer &printer,
       printer.Print("\n");
 
     printer.Print("public abstract $method_signature$;\n", "method_signature",
-                  GetMethodSignature(method, MethodSignatureType::Stub));
+                  GetMethodSignature(method, ContextType::Stub));
   }
 
   printer.Outdent();
@@ -184,7 +190,6 @@ void GetStubDefinitions(pb::io::Printer &printer,
                         const pb::FileDescriptor &file) {
   std::map<std::string, std::string> vars;
 
-  printer.Indent();
   for (int i = 0; i < file.service_count(); ++i) {
     const auto &service = *file.service(i);
     if (!service.options().HasExtension(nanorpc::event_source)) {
@@ -193,7 +198,6 @@ void GetStubDefinitions(pb::io::Printer &printer,
       GenerateServiceBase(printer, service);
     }
   }
-  printer.Outdent();
 }
 
 }  // namespace closetrpc_csharp_codegen

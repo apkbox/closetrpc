@@ -21,7 +21,7 @@ namespace ProtobufTestApp
 
         private readonly Dictionary<string, string> settings = new Dictionary<string, string>();
 
-        private readonly SettingsEvents_Proxy settingsEvents = new SettingsEvents_Proxy();
+        private readonly SettingsEvents_EventProxy settingsEvents = new SettingsEvents_EventProxy();
 
         #endregion
 

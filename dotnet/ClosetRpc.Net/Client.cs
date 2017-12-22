@@ -81,6 +81,16 @@ namespace ClosetRpc
 
         #region Public Methods and Operators
 
+        public void AddEventListener(IEventHandler handler)
+        {
+            this.eventServiceManager.RegisterHandler(handler);
+        }
+
+        public void AddEventListener(IEventHandlerStub handler, string name)
+        {
+            this.eventServiceManager.RegisterHandler(handler, name);
+        }
+
         /// <summary>
         /// Sends request to the server.
         /// </summary>
@@ -207,18 +217,35 @@ namespace ClosetRpc
             }
         }
 
+        // TODO: Replace with a method that returns WaitHandle.
+        public bool WaitForEvents(int millisecondsTimeout)
+        {
+            return this.WaitForEvents(new TimeSpan(0, 0, 0, 0, millisecondsTimeout));
+        }
+
         public bool WaitForEvents()
         {
-            while (this.isRunning)
-            {
-                lock (this.eventQueueLock)
-                {
-                    if (!this.eventQueue.IsEmpty)
-                    {
-                        return true;
-                    }
+            return this.WaitForEvents(-1);
+        }
 
-                    Monitor.Wait(this.eventQueueLock, 500);
+        public bool WaitForEvents(TimeSpan timeout)
+        {
+            if (!this.isRunning)
+            {
+                return false;
+            }
+
+            lock (this.eventQueueLock)
+            {
+                if (!this.eventQueue.IsEmpty)
+                {
+                    return true;
+                }
+
+                Monitor.Wait(this.eventQueueLock, timeout);
+                if (!this.eventQueue.IsEmpty)
+                {
+                    return true;
                 }
             }
 

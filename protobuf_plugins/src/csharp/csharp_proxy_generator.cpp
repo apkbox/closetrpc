@@ -29,7 +29,7 @@ void GenerateProxyMethods(pb::io::Printer &printer,
       printer.Print("\n");
 
     printer.Print("public $method_signature$\n{\n", "method_signature",
-                  GetMethodSignature(method, MethodSignatureType::Proxy));
+                  GetMethodSignature(method, ContextType::Proxy));
 
     printer.Indent();
 
@@ -104,14 +104,11 @@ void GenerateProxy(pb::io::Printer &printer,
 
 void GetProxyDefinitions(pb::io::Printer &printer,
                          const pb::FileDescriptor &file) {
-  std::map<std::string, std::string> vars;
-  printer.Indent();
   for (int i = 0; i < file.service_count(); ++i) {
     const auto &service = *file.service(i);
     if (!service.options().HasExtension(nanorpc::event_source))
       GenerateProxy(printer, service);
   }
-  printer.Outdent();
 }
 
 }  // namespace closetrpc_csharp_codegen

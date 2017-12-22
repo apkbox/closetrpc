@@ -30,12 +30,12 @@ void GenerateEventProxyMethods(pb::io::Printer &printer,
       printer.Print("\n");
 
     printer.Print("public $method_signature$\n{\n", "method_signature",
-                  GetMethodSignature(method, MethodSignatureType::EventProxy));
+                  GetMethodSignature(method, ContextType::EventProxy));
 
     printer.Indent();
 
     vars["method_name"] = method.name();
-    vars["proxy_name"] = GetProxyName(method.service()->name());
+    vars["proxy_name"] = GetEventProxyName(method.service()->name());
     vars["service_name"] = method.service()->name();
 
     vars["input_type_name"] = method.input_type()->name();
@@ -64,7 +64,7 @@ void GenerateEventProxy(pb::io::Printer &printer,
                         const pb::ServiceDescriptor &service) {
   std::map<std::string, std::string> vars;
 
-  vars["proxy_name"] = GetProxyName(service.name());
+  vars["proxy_name"] = GetEventProxyName(service.name());
   vars["service_name"] = service.name();
   vars["service_interface_name"] = GetInterfaceName(service.name());
   vars["service_full_name"] = service.full_name();

@@ -77,7 +77,7 @@ bool IsVoidType(const pb::Descriptor *type) {
 }
 
 std::string GetMethodSignature(const pb::MethodDescriptor &method,
-                               MethodSignatureType type) {
+                               ContextType type) {
   std::string output;
   {
     // Scope the output stream so it closes and finalizes output to the string.
@@ -85,9 +85,13 @@ std::string GetMethodSignature(const pb::MethodDescriptor &method,
     pb::io::Printer printer(&output_stream, '$');
     std::map<std::string, std::string> vars;
 
+    auto method_name = method.name();
+    if (type == ContextType::EventStub)
+      method_name = GetEventMethodName(method_name);
+
     vars["server_context_type"] = kServerContextType;
     vars["event_source_type"] = kRpcEventSourceType;
-    vars["method_name"] = method.name();
+    vars["method_name"] = method_name;
     vars["output_type_name"] = method.output_type()->name();
 
     if (IsVoidType(method.output_type()))
@@ -96,9 +100,9 @@ std::string GetMethodSignature(const pb::MethodDescriptor &method,
     printer.Print(vars, "$output_type_name$ $method_name$(");
 
     bool has_context_argument = true;
-    if (type == MethodSignatureType::Stub)
+    if (type == ContextType::Stub)
       printer.Print(vars, "$server_context_type$ context");
-    else if (type == MethodSignatureType::EventProxy)
+    else if (type == ContextType::EventProxy)
       printer.Print(vars, "$event_source_type$ eventSource");
     else
       has_context_argument = false;

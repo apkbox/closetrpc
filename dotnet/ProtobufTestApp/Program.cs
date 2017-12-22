@@ -30,6 +30,9 @@ namespace ProtobufTestApp
         {
             var transport = new SocketClientTransport("localhost", 4242);
             var client = new Client(transport);
+            var eventHandler = new SettingsEvents_Handler();
+            client.AddEventListener(eventHandler);
+            eventHandler.Changed += Program.EventHandlerOnChanged;
             var settings = new SettingsService_Proxy(client);
 
             settings.Set(
@@ -50,7 +53,20 @@ namespace ProtobufTestApp
                 Console.WriteLine("{0} = {1}", setting.Key, setting.Value);
             }
 
+            for (var i = 0; i < 10; i++)
+            {
+                if (!client.PumpEvents())
+                {
+                    client.WaitForEvents(500);
+                }
+            }
+
             client.Shutdown(false);
+        }
+
+        private static void EventHandlerOnChanged(object sender, SettingList settingList)
+        {
+            Console.WriteLine("Settings changed!");
         }
 
         static void Main(string[] args)

@@ -48,36 +48,44 @@ bool NanoRpcCppGenerator::Generate(const pb::FileDescriptor *file,
   pb::io::Printer printer(output_stream.get(), '$');
 
   GetSourcePrologue(printer, *file);
-
   printer.Indent();
+
   printer.Print("#region Interfaces\n\n");
   GetInterfaceDefinitions(printer, *file);
   printer.Print("#endregion\n\n");
-  printer.Outdent();
 
-  printer.Indent();
   printer.Print("#region Stub classes\n\n");
   GetStubDefinitions(printer, *file);
   printer.Print("#endregion\n\n");
-  printer.Outdent();
 
-  printer.Indent();
   printer.Print("#region Proxy classes\n\n");
   GetProxyDefinitions(printer, *file);
   printer.Print("#endregion\n\n");
-  printer.Outdent();
 
-  printer.Indent();
-  printer.Print("#region Event classes\n\n");
+  printer.Print("#region Event proxy classes\n\n");
   for (int i = 0; i < file->service_count(); ++i) {
     const auto &service = *file->service(i);
     if (service.options().HasExtension(nanorpc::event_source))
       GenerateEventProxy(printer, service);
   }
 
-  printer.Print("#endregion\n");
-  printer.Outdent();
+  printer.Print("#endregion\n\n");
 
+  printer.Print("#region Event stub classes\n\n");
+  for (int i = 0; i < file->service_count(); ++i) {
+    const auto &service = *file->service(i);
+    if (service.options().HasExtension(nanorpc::event_source)) {
+      GenerateInterfaceDefinition(printer, service, true);
+      GenerateEventStubBase(printer, service);
+      GenerateEventStub(printer, service);
+      GenerateEventListener(printer, service);
+      GenerateEventHandler(printer, service);
+    }
+  }
+
+  printer.Print("#endregion\n");
+
+  printer.Outdent();
   GetSourceEpilogue(printer, *file);
 
   return true;
