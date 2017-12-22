@@ -10,7 +10,7 @@
 namespace ClosetRpc
 {
     using System;
-    using System.Collections.Generic;
+    using System.Collections.Concurrent;
 
     internal class EventServiceManager
     {
@@ -19,7 +19,8 @@ namespace ClosetRpc
         /// <summary>
         /// Maps the interface name to a handler implementation (in form of stub).
         /// </summary>
-        private readonly Dictionary<string, IEventHandlerStub> services = new Dictionary<string, IEventHandlerStub>();
+        private readonly ConcurrentDictionary<string, IEventHandlerStub> services =
+            new ConcurrentDictionary<string, IEventHandlerStub>();
 
         #endregion
 
@@ -58,7 +59,10 @@ namespace ClosetRpc
                 throw new ArgumentNullException("eventServiceName");
             }
 
-            this.services.Add(eventServiceName, eventHandler);
+            if (!this.services.TryAdd(eventServiceName, eventHandler))
+            {
+                throw new ArgumentException("An element with the same key already exists.", "eventServiceName");
+            }
         }
 
         #endregion

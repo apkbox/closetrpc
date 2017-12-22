@@ -10,11 +10,10 @@
 namespace ClosetRpc
 {
     using System;
-    using System.Collections.Generic;
+    using System.Collections.Concurrent;
 
     /// <summary>
     /// Manages services registered with the service.
-    /// TODO: Make thread safe
     /// </summary>
     internal class GlobalObjectManager
     {
@@ -23,7 +22,8 @@ namespace ClosetRpc
         /// <summary>
         /// Maps the interface name to a service implementation (in form of stub).
         /// </summary>
-        private readonly Dictionary<string, IRpcServiceStub> services = new Dictionary<string, IRpcServiceStub>();
+        private readonly ConcurrentDictionary<string, IRpcServiceStub> services =
+            new ConcurrentDictionary<string, IRpcServiceStub>();
 
         #endregion
 
@@ -62,7 +62,10 @@ namespace ClosetRpc
                 throw new ArgumentNullException("serviceName");
             }
 
-            this.services.Add(serviceName, service);
+            if (!this.services.TryAdd(serviceName, service))
+            {
+                throw new ArgumentException("An element with the same key already exists.", "serviceName");
+            }
         }
 
         #endregion

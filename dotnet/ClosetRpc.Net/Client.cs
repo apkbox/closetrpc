@@ -480,10 +480,11 @@ namespace ClosetRpc
                 {
                     if (!this.pendingCalls.ContainsKey(requestId))
                     {
+                        // This should really never happen, unless there is a logic error.
                         this.log.ErrorFormat("Failed to find pending call {0}.", requestId);
-
-                        // TODO: This is really an internal error, so use other status.
-                        throw new RpcException(RpcStatus.ChannelFailure);
+                        Debug.Fail("Failed to find pending call.");
+                        result = this.ProtocolObjectFactory.CreateRpcResult();
+                        result.Status = RpcStatus.InternalError;
                     }
                     else
                     {

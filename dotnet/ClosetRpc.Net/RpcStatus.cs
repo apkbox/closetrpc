@@ -40,5 +40,10 @@ namespace ClosetRpc
         /// Invalid call parameter.
         /// </summary>
         InvalidCallParameter = 5,
+
+        /// <summary>
+        /// Internal error.
+        /// </summary>
+        InternalError = 6
     }
 }

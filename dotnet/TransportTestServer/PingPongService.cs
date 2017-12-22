@@ -79,7 +79,8 @@ namespace TransportTestServer
 
         private bool ReadMessage()
         {
-            // TODO: Handle partial reads.
+            // This code is really simplified to the point of failure
+            // as it does not handle partial reads.
             var headerBuffer = new byte[4];
             var bytesRead = this.channel.Stream.Read(headerBuffer, 0, headerBuffer.Length);
             if (bytesRead < headerBuffer.Length)
