@@ -7,8 +7,13 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitle("ClosetRpc.Net.Protobuf")]
 [assembly: AssemblyDescription("Google Protocol Buffers support for ClosetRPC.")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+#if DEBUG
+[assembly: AssemblyConfiguration("Debug")]
+#else
+[assembly: AssemblyConfiguration("Release")]
+#endif
+
+[assembly: AssemblyCompany("Alex Kozlov")]
 [assembly: AssemblyProduct("ClosetRpc.Net.Protobuf")]
 [assembly: AssemblyCopyright("Copyright ©  2017 Alex Kozlov.")]
 [assembly: AssemblyTrademark("")]

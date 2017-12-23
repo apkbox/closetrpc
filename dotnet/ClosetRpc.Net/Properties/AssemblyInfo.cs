@@ -8,9 +8,15 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("ClosetRpc.Net")]
-[assembly: AssemblyDescription("RPC library for .NET")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyDescription("Simple RPC library for .NET")]
+
+#if DEBUG
+[assembly: AssemblyConfiguration("Debug")]
+#else
+[assembly: AssemblyConfiguration("Release")]
+#endif
+
+[assembly: AssemblyCompany("Alex Kozlov")]
 [assembly: AssemblyProduct("ClosetRpc.Net")]
 [assembly: AssemblyCopyright("Copyright ©  2017 Alex Kozlov.")]
 [assembly: AssemblyTrademark("")]
