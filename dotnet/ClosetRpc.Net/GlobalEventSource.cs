@@ -13,13 +13,13 @@ namespace ClosetRpc
     {
         #region Fields
 
-        private readonly Server server;
+        private readonly RpcServer server;
 
         #endregion
 
         #region Constructors and Destructors
 
-        internal GlobalEventSource(Server server)
+        internal GlobalEventSource(RpcServer server)
         {
             this.server = server;
         }

@@ -21,7 +21,7 @@ namespace MessagingTestServer
 
         private readonly ILog log = LogManager.GetLogger<Program>();
 
-        private Server server;
+        private RpcServer server;
 
         #endregion
 
@@ -53,7 +53,7 @@ namespace MessagingTestServer
             Console.WriteLine("Application started.");
             Console.CancelKeyPress += this.ConsoleOnCancelKeyPress;
 
-            this.server = new Server(new SocketServerTransport(3101));
+            this.server = new RpcServer(new SocketServerTransport(3101));
             this.server.RegisterService(new PingPongService());
             this.server.Run();
 

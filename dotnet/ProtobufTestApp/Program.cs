@@ -20,7 +20,7 @@ namespace ProtobufTestApp
     {
         #region Static Fields
 
-        private static Server serverInstance;
+        private static RpcServer serverInstance;
 
         #endregion
 
@@ -29,7 +29,7 @@ namespace ProtobufTestApp
         private static void ClientThread()
         {
             var transport = new SocketClientTransport("localhost", 4242);
-            var client = new Client(transport);
+            var client = new RpcClient(transport);
             var eventHandler = new SettingsEvents_Handler();
             client.AddEventListener(eventHandler);
             eventHandler.Changed += Program.EventHandlerOnChanged;
@@ -90,7 +90,7 @@ namespace ProtobufTestApp
         private static void ServerThread()
         {
             var transport = new SocketServerTransport(4242);
-            var server = new Server(transport);
+            var server = new RpcServer(transport);
             Program.serverInstance = server;
             var service = new SettingsService(server.EventSource);
             server.RegisterService(service);

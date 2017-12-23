@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------
-// <copyright file="Client.cs" company="Private">
+// <copyright file="RpcClient.cs" company="Private">
 //   Copyright (c) Alex Kozlov.
 // </copyright>
 // <summary>
@@ -20,7 +20,7 @@ namespace ClosetRpc
 
     using Common.Logging;
 
-    public class Client
+    public class RpcClient
     {
         #region Fields
 
@@ -34,7 +34,7 @@ namespace ClosetRpc
 
         private readonly EventServiceManager eventServiceManager = new EventServiceManager();
 
-        private readonly ILog log = LogManager.GetLogger<Client>();
+        private readonly ILog log = LogManager.GetLogger<RpcClient>();
 
         private readonly Dictionary<uint, PendingCall> pendingCalls = new Dictionary<uint, PendingCall>();
 
@@ -58,7 +58,7 @@ namespace ClosetRpc
 
         #region Constructors and Destructors
 
-        public Client(IClientTransport transport)
+        public RpcClient(IClientTransport transport)
         {
             this.transport = transport;
             this.log.Debug("Client created.");

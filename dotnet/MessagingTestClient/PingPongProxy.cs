@@ -17,13 +17,13 @@ namespace MessagingTestClient
     {
         #region Fields
 
-        private readonly Client client;
+        private readonly RpcClient client;
 
         #endregion
 
         #region Constructors and Destructors
 
-        public PingPongProxy(Client client)
+        public PingPongProxy(RpcClient client)
         {
             this.client = client;
         }

@@ -15,7 +15,7 @@ namespace ClosetRpc
     {
         #region Constructors and Destructors
 
-        public ServerContext(Server server, IChannel channel, Thread thread)
+        public ServerContext(RpcServer server, IChannel channel, Thread thread)
         {
             this.Server = server;
             this.Channel = channel;
@@ -37,7 +37,7 @@ namespace ClosetRpc
 
         public ObjectManager ObjectManager { get; private set; }
 
-        public Server Server { get; private set; }
+        public RpcServer Server { get; private set; }
 
         public Thread Thread { get; set; }
 

@@ -71,7 +71,7 @@ namespace ClosetRpc
             var client = this.tcpClient;
             if (client != null)
             {
-                client.Dispose();
+                client.Close();
             }
         }
 

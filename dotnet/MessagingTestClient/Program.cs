@@ -59,14 +59,14 @@ namespace MessagingTestClient
 
             var transport = new SocketClientTransport("localhost", 3101);
 
-            Client client = null;
+            RpcClient client = null;
             while (this.isRunning)
             {
                 try
                 {
                     var succeeded = true;
                     this.log.Info("Connecting...");
-                    client = new Client(transport);
+                    client = new RpcClient(transport);
 
                     this.log.Info("Connected. Sending messages...");
                     var pingPong = new PingPongProxy(client);

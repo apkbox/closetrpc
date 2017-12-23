@@ -129,9 +129,9 @@ namespace CodegenTest
     {
         private static readonly string ServiceName = "TestServiceInterface";
 
-        private readonly Client client;
+        private readonly RpcClient client;
 
-        public TestServiceInterface_Proxy(Client client)
+        public TestServiceInterface_Proxy(RpcClient client)
         {
             this.client = client;
         }

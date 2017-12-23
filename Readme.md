@@ -6,10 +6,6 @@ TODO:
   protected constructor. This will help to avoid creating stub unnceessarily
   as the base class implementation is derived from stub.
 
-* Channel must operate with buffers instead of messages. The message should
-  already be serialized by the server before passing it to the channel. So,
-  the channel is a transport only.
-
 * The service implementation may not be thread safe by default, provide
   and easy way to serialize calls to the service if needed, probably using
   a stub wrapper. The default server behavior is that all incoming calls 
@@ -105,14 +101,14 @@ OTHER THOUGHTS:
     // is to create a new Client)?
 
 ### server.cpp::Wait
-  // TODO: Prevent calling Wait concurrently. There could be only one thread.
+    // TODO: Prevent calling Wait concurrently. There could be only one thread.
 
 ### client.h::CallMethod
-  // Calls RPC method and waits for reply.
-  // TODO: If call is asynchronous the method should not block.
-  // However, only proxy/stub know that the call is async, so
-  // we should relay this information to CallMethod either within
-  // RpcCall/RpcMessage (previous implementation) or via additional parameter.
+    // Calls RPC method and waits for reply.
+    // TODO: If call is asynchronous the method should not block.
+    // However, only proxy/stub know that the call is async, so
+    // we should relay this information to CallMethod either within
+    // RpcCall/RpcMessage (previous implementation) or via additional parameter.
 
 
 ### ServiceManager
@@ -124,18 +120,18 @@ OTHER THOUGHTS:
     // This is needed for per-context service manager as it does not require locking.
 
 ### ServerContext::SendEvent
-  // TODO: This is quite inefficient here, because the call is serialized
-  // for each context (connection). It would be nice to cache the serialized
-  // version and then send it for each context.
-  // Note that as implementation moved towared connection based handling,
-  // this inefficiency only matter when broadcasting events.
+    // TODO: This is quite inefficient here, because the call is serialized
+    // for each context (connection). It would be nice to cache the serialized
+    // version and then send it for each context.
+    // Note that as implementation moved towared connection based handling,
+    // this inefficiency only matter when broadcasting events.
 
 ### client Event handling
     // TODO: Implement queue size limiting. Drop the oldest events.
     // BUG: Although it looks smart to cache the handler
     // pointer to avoid extra lookup it is a bad move.
     // Between time we received event and user called
-    // PumpEvent, the other thread coild have called StopListening
+    // PumpEvent, the other thread could have called StopListening
     // so, the pointer to the service will be invalid.
     // On the other hand StopListening should reliably remove
     // events that are not being listened.

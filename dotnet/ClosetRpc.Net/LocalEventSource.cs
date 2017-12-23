@@ -15,13 +15,13 @@ namespace ClosetRpc
 
         private readonly IChannel channel;
 
-        private readonly Server server;
+        private readonly RpcServer server;
 
         #endregion
 
         #region Constructors and Destructors
 
-        public LocalEventSource(Server server, IChannel channel)
+        public LocalEventSource(RpcServer server, IChannel channel)
         {
             this.server = server;
             this.channel = channel;

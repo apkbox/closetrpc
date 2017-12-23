@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ClosetRpc</RootNamespace>
     <AssemblyName>ClosetRpc.Net</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -49,7 +49,7 @@
   <ItemGroup>
     <Compile Include="Channel.cs" />
     <Compile Include="ChannelStatus.cs" />
-    <Compile Include="Client.cs" />
+    <Compile Include="RpcClient.cs" />
     <Compile Include="EventServiceManager.cs" />
     <Compile Include="GlobalEventSource.cs" />
     <Compile Include="GlobalObjectManager.cs" />
@@ -80,7 +80,7 @@
     <Compile Include="Protocol\SerializationHelpers.cs" />
     <Compile Include="RpcException.cs" />
     <Compile Include="RpcStatus.cs" />
-    <Compile Include="Server.cs" />
+    <Compile Include="RpcServer.cs" />
     <Compile Include="ServerContext.cs" />
     <Compile Include="SocketClientTransport.cs" />
     <Compile Include="SocketServerTransport.cs" />

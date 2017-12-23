@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------
-// <copyright file="Server.cs" company="Private">
+// <copyright file="RpcServer.cs" company="Private">
 //   Copyright (c) Alex Kozlov.
 // </copyright>
 // <summary>
@@ -20,7 +20,7 @@ namespace ClosetRpc
 
     using Common.Logging;
 
-    public class Server
+    public class RpcServer
     {
         #region Fields
 
@@ -30,7 +30,7 @@ namespace ClosetRpc
 
         private readonly Lazy<IProtocolObjectFactory> cachedFactory;
 
-        private readonly ILog log = LogManager.GetLogger<Server>();
+        private readonly ILog log = LogManager.GetLogger<RpcServer>();
 
         private readonly GlobalObjectManager objectManager = new GlobalObjectManager();
 
@@ -44,7 +44,7 @@ namespace ClosetRpc
 
         #region Constructors and Destructors
 
-        public Server(IServerTransport transport)
+        public RpcServer(IServerTransport transport)
         {
             this.transport = transport;
             this.cachedFactory = new Lazy<IProtocolObjectFactory>(

@@ -23,7 +23,7 @@ namespace ClosetRpc.Test
         {
             var channel = new Channel(null);
             var thread = new Thread(() => { });
-            var server = new Server(null);
+            var server = new RpcServer(null);
 
             var sc = new ServerContext(server, channel, thread);
             Assert.That(sc.Channel, Is.SameAs(channel));
