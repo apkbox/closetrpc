@@ -11,7 +11,7 @@ set OUTPUT_DIR=%BASE_PATH%\build
 set NUGET_PACKAGE_DIR=%OUTPUT_DIR%\packages
 set NUGET_LOCAL_FEED=%1
 
-// msbuild /m /p:Configuration=Release /p:Platform="Any CPU" "%BASE_PATH%\closetrpc_dotnet.sln"
+rem msbuild /m /p:Configuration=Release /p:Platform="Any CPU" "%BASE_PATH%\closetrpc_dotnet.sln"
 
 rmdir /s/q %NUGET_PACKAGE_DIR%
 
@@ -30,5 +30,5 @@ if "%NUGET_LOCAL_FEED%"=="" (
 	for %%n in (%NUGET_PACKAGE_DIR%\*.nupkg) do nuget add %%n -source %NUGET_LOCAL_FEED%\
 )
 
-end:
+:end
 endlocal
