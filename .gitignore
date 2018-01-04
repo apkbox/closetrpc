@@ -27,3 +27,13 @@
 /third_party/protobuf_dotnet/
 /dotnet/ProtobufTestApp/bin/
 /dotnet/ProtobufTestApp/obj/
+/dotnet/ClosetRpc.Net.Core/obj/
+/dotnet/ClosetRpc.Net.Core/bin/
+/dotnet/ClosetRpc.Net.Util/bin/
+/dotnet/ClosetRpc.Net.Util/obj/
+/dotnet/MessengerApi/bin/
+/dotnet/MessengerApi/obj/
+/dotnet/MessengerClient/bin/
+/dotnet/MessengerClient/obj/
+/dotnet/MessengerServer/bin/
+/dotnet/MessengerServer/obj/

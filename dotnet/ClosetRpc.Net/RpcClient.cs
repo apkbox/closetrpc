@@ -321,6 +321,7 @@ namespace ClosetRpc
                 }
 
                 this.receiverThread = new Thread(this.ReceiverThread);
+                this.receiverThread.Name = "RpcReceiverThread";
                 this.receiverThread.Start();
             }
         }

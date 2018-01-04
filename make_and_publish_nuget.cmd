@@ -15,8 +15,8 @@ rem msbuild /m /p:Configuration=Release /p:Platform="Any CPU" "%BASE_PATH%\close
 
 rmdir /s/q %NUGET_PACKAGE_DIR%
 
-nuget pack "%BASE_PATH%\dotnet\ClosetRpc.Net" -Properties Configuration=Release -OutputDirectory "%NUGET_PACKAGE_DIR%" -build
-nuget pack "%BASE_PATH%\dotnet\ClosetRpc.Net.Protobuf" -Properties Configuration=Release -OutputDirectory "%NUGET_PACKAGE_DIR%" -build
+nuget pack "%BASE_PATH%\dotnet\ClosetRpc.Net" -Properties Configuration=Release -OutputDirectory "%NUGET_PACKAGE_DIR%" -build -symbols -IncludeReferencedProjects
+nuget pack "%BASE_PATH%\dotnet\ClosetRpc.Net.Protobuf" -Properties Configuration=Release -OutputDirectory "%NUGET_PACKAGE_DIR%" -build -symbols -IncludeReferencedProjects
 
 if "%NUGET_LOCAL_FEED%"=="" (
 	echo.

@@ -4,12 +4,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{DDBCA085-1183-4ADE-9C16-C06797A38ABD}</ProjectGuid>
+    <ProjectGuid>{5AD1B670-1C59-43E4-B02B-133CE1C18085}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ClosetRpc.Test</RootNamespace>
-    <AssemblyName>ClosetRpc.Test</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <RootNamespace>MessengerApi</RootNamespace>
+    <AssemblyName>MessengerApi</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -30,8 +30,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.framework, Version=3.9.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\NUnit.3.9.0\lib\net45\nunit.framework.dll</HintPath>
+    <Reference Include="Google.Protobuf">
+      <HintPath>..\..\third_party\protobuf_dotnet\bin\Release\net45\Google.Protobuf.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -43,23 +43,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EventServiceManagerTests.cs" />
-    <Compile Include="GlobalObjectManagerTests.cs" />
-    <Compile Include="PendingCallTests.cs" />
-    <Compile Include="ProtocolObjectsTests.cs" />
+    <Compile Include="NanoMessanger.Closetrpc.cs" />
+    <Compile Include="NanoMessenger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RpcClientTests.cs" />
-    <Compile Include="ServerContextTests.cs" />
-    <Compile Include="ServerTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="NanoMessenger.proto" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ClosetRpc.Net.Protobuf\ClosetRpc.Net.Protobuf.csproj">
+      <Project>{569cb9b5-11e8-43c5-918a-b1f06b8e777d}</Project>
+      <Name>ClosetRpc.Net.Protobuf</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ClosetRpc.Net\ClosetRpc.Net.csproj">
-      <Project>{C69A1450-9088-46C4-808C-C6F7591AB3E8}</Project>
+      <Project>{c69a1450-9088-46c4-808c-c6f7591ab3e8}</Project>
       <Name>ClosetRpc.Net</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
