@@ -75,5 +75,5 @@ service MessengerEvents {
 
 service MessengerService {
 	rpc SendMessage (Message) returns (google.protobuf.Empty);
-	rpc GetPendingMessages(google.protobuf.Empty) returns (MessageList);
+	rpc GetPendingMessages(google.protobuf.Int32Value) returns (MessageList);
 }
