@@ -9,15 +9,21 @@
 
 namespace ClosetRpc
 {
+    using System.Collections.Generic;
+
     public interface IServerContext
     {
         #region Public Properties
+
+        IEnumerable<IServerContext> ActiveConnections { get; }
 
         IEventSource GlobalEventSource { get; }
 
         IEventSource LocalEventSource { get; }
 
         ObjectManager ObjectManager { get; }
+
+        object UserData { get; set; }
 
         #endregion
     }

@@ -10,58 +10,79 @@
 namespace MessengerServer
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
+    using System.Linq;
 
     public class BusinessLogic
     {
         #region Fields
 
-        public readonly Dictionary<string, User> Users = new Dictionary<string, User>();
+        private readonly Dictionary<string, User> sessions = new Dictionary<string, User>();
 
-        public readonly Dictionary<string, User> Sessions = new Dictionary<string, User>();
+        private readonly Dictionary<string, User> users = new Dictionary<string, User>();
 
         #endregion
 
         #region Public Methods and Operators
 
-        public void AddUser(User User)
+        public void AddContact(User user, User contact)
         {
-            if (this.Users.ContainsKey(User.UserName))
-            {
-                throw new Exception("User already exists.");
-            }
-
-            this.Users.Add(User.UserName, User);
+            user.Contacts[contact.UserName] = contact;
         }
 
-        public void RemoveUser(string userName)
+        public void AddUser(User user)
         {
-            this.Users.Remove(userName);
+            if (this.users.ContainsKey(user.UserName))
+            {
+                throw new Exception("user already exists.");
+            }
+
+            this.users.Add(user.UserName, user);
+        }
+
+        public User GetUser(string userName)
+        {
+            return this.users.TryGetValue(userName, out var user) ? user : null;
+        }
+
+        public User GetUserBySessionKey(string sessionKey)
+        {
+            return this.sessions.TryGetValue(sessionKey, out var user) ? user : null;
         }
 
         public string Login(string userName, string password)
         {
-            if (!this.Users.TryGetValue(userName, out var user))
+            if (!this.users.TryGetValue(userName, out var user))
+            {
                 return null;
+            }
 
             if (user.Password != password)
+            {
                 return null;
+            }
 
             var sessionId = Guid.NewGuid().ToString();
-            this.Sessions[sessionId] = user;
+            this.sessions[sessionId] = user;
             return sessionId;
         }
 
         public void Logout(string sessionId)
         {
-            this.Sessions.Remove(sessionId);
+            this.sessions.Remove(sessionId);
         }
 
-        public List<User> SearchContact(string search)
+        public void RemoveUser(string userName)
         {
-            HashSet<User> selected = new HashSet<User>();
+            this.users.Remove(userName);
+        }
 
-            foreach(var user in Users.Values)
+        public List<User> SearchUsers(string search)
+        {
+            var selected = new HashSet<User>();
+
+            foreach (var user in this.users.Values)
             {
                 if (user.UserName.Contains(search))
                 {
@@ -71,6 +92,7 @@ namespace MessengerServer
                 {
                     selected.Add(user);
                 }
+
                 if (user.FirstName.Contains(search))
                 {
                     selected.Add(user);
@@ -80,11 +102,18 @@ namespace MessengerServer
             return new List<User>(selected);
         }
 
-        public void AddContact(User user, User contact)
+        #endregion
+
+        public IList<User> GetContacts(string userName)
         {
-            user.Contacts.[contact.UserName] = contact;
+            var user = this.users[userName];
+            return user.Contacts.Values.ToList();
         }
 
-        #endregion
+        public void SendMessage(string fromUserName, string toUserName, string text)
+        {
+            var toUser = this.users[toUserName];
+            toUser.AddMessage(fromUserName, text);
+        }
     }
 }

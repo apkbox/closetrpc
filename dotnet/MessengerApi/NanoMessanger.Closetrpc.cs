@@ -25,20 +25,20 @@ namespace NanoMessanger
 
   public interface ContactListServiceInterface
   {
-    ContactList SearchContact(global::ClosetRpc.IServerContext context, StringValue value);
+    ContactList FindUser(global::ClosetRpc.IServerContext context, StringValue value);
 
     void AddContact(global::ClosetRpc.IServerContext context, ContactInfo value);
 
     void RemoveContact(global::ClosetRpc.IServerContext context, StringValue value);
 
-    ContactInfo GetContacts(global::ClosetRpc.IServerContext context);
+    ContactList GetContacts(global::ClosetRpc.IServerContext context);
   }
 
-  public interface MessengerServiceInterface
+  public interface MessageServiceInterface
   {
     void SendMessage(global::ClosetRpc.IServerContext context, Message value);
 
-    MessageList GetPendingMessages(global::ClosetRpc.IServerContext context);
+    MessageList GetPendingMessages(global::ClosetRpc.IServerContext context, Int32Value value);
   }
 
   #endregion
@@ -158,11 +158,11 @@ namespace NanoMessanger
     {
       rpcResult.Status = global::ClosetRpc.RpcStatus.Succeeded;
 
-      if (rpcCall.MethodName == "SearchContact")
+      if (rpcCall.MethodName == "FindUser")
       {
         var input = new StringValue();
         input.MergeFrom(new CodedInputStream(rpcCall.CallData));
-        var result = this.Impl.SearchContact(context, input);
+        var result = this.Impl.FindUser(context, input);
         rpcResult.ResultData = result.ToByteArray();
       }
       else if (rpcCall.MethodName == "AddContact")
@@ -219,26 +219,26 @@ namespace NanoMessanger
       }
     }
 
-    public abstract ContactList SearchContact(global::ClosetRpc.IServerContext context, StringValue value);
+    public abstract ContactList FindUser(global::ClosetRpc.IServerContext context, StringValue value);
 
     public abstract void AddContact(global::ClosetRpc.IServerContext context, ContactInfo value);
 
     public abstract void RemoveContact(global::ClosetRpc.IServerContext context, StringValue value);
 
-    public abstract ContactInfo GetContacts(global::ClosetRpc.IServerContext context);
+    public abstract ContactList GetContacts(global::ClosetRpc.IServerContext context);
   }
 
-  public abstract class MessengerService_StubBase : global::ClosetRpc.IRpcService
+  public abstract class MessageService_StubBase : global::ClosetRpc.IRpcService
   {
     public string Name
     {
       get
       {
-        return "nano_messanger.MessengerService";
+        return "nano_messanger.MessageService";
       }
     }
 
-    protected abstract MessengerServiceInterface Impl { get; }
+    protected abstract MessageServiceInterface Impl { get; }
 
     public void CallMethod(global::ClosetRpc.IServerContext context, global::ClosetRpc.IRpcCall rpcCall, global::ClosetRpc.IRpcResult rpcResult)
     {
@@ -252,7 +252,9 @@ namespace NanoMessanger
       }
       else if (rpcCall.MethodName == "GetPendingMessages")
       {
-        var result = this.Impl.GetPendingMessages(context);
+        var input = new Int32Value();
+        input.MergeFrom(new CodedInputStream(rpcCall.CallData));
+        var result = this.Impl.GetPendingMessages(context, input);
         rpcResult.ResultData = result.ToByteArray();
       }
       else
@@ -264,16 +266,16 @@ namespace NanoMessanger
     }
   }
 
-  public class MessengerService_Stub : MessengerService_StubBase
+  public class MessageService_Stub : MessageService_StubBase
   {
-    private readonly MessengerServiceInterface impl;
+    private readonly MessageServiceInterface impl;
 
-    public MessengerService_Stub(MessengerServiceInterface impl)
+    public MessageService_Stub(MessageServiceInterface impl)
     {
       this.impl = impl;
     }
 
-    protected override MessengerServiceInterface Impl
+    protected override MessageServiceInterface Impl
     {
       get
       {
@@ -282,9 +284,9 @@ namespace NanoMessanger
     }
   }
 
-  public abstract class MessengerService_ServiceBase : MessengerService_StubBase, MessengerServiceInterface
+  public abstract class MessageService_ServiceBase : MessageService_StubBase, MessageServiceInterface
   {
-    protected override MessengerServiceInterface Impl
+    protected override MessageServiceInterface Impl
     {
       get
       {
@@ -294,7 +296,7 @@ namespace NanoMessanger
 
     public abstract void SendMessage(global::ClosetRpc.IServerContext context, Message value);
 
-    public abstract MessageList GetPendingMessages(global::ClosetRpc.IServerContext context);
+    public abstract MessageList GetPendingMessages(global::ClosetRpc.IServerContext context, Int32Value value);
   }
 
   #endregion
@@ -408,11 +410,11 @@ namespace NanoMessanger
       this.client = client;
     }
 
-    public ContactList SearchContact(StringValue value)
+    public ContactList FindUser(StringValue value)
     {
       var call = new global::ClosetRpc.RpcCallParameters();
       call.ServiceName = ContactListService_Proxy.ServiceName;
-      call.MethodName = "SearchContact";
+      call.MethodName = "FindUser";
       call.CallData = value.ToByteArray();
       var result = this.client.CallService(call);
       if (result.Status != global::ClosetRpc.RpcStatus.Succeeded)
@@ -451,7 +453,7 @@ namespace NanoMessanger
       }
     }
 
-    public ContactInfo GetContacts()
+    public ContactList GetContacts()
     {
       var call = new global::ClosetRpc.RpcCallParameters();
       call.ServiceName = ContactListService_Proxy.ServiceName;
@@ -462,19 +464,19 @@ namespace NanoMessanger
         throw new Exception(); // TODO: Be more specific
       }
 
-      var returnValue = new ContactInfo();
+      var returnValue = new ContactList();
       returnValue.MergeFrom(result.ResultData);
       return returnValue;
     }
   }
 
-  public class MessengerService_Proxy
+  public class MessageService_Proxy
   {
-    private static readonly string ServiceName = "nano_messanger.MessengerService";
+    private static readonly string ServiceName = "nano_messanger.MessageService";
 
     private readonly global::ClosetRpc.RpcClient client;
 
-    public MessengerService_Proxy(global::ClosetRpc.RpcClient client)
+    public MessageService_Proxy(global::ClosetRpc.RpcClient client)
     {
       this.client = client;
     }
@@ -482,7 +484,7 @@ namespace NanoMessanger
     public void SendMessage(Message value)
     {
       var call = new global::ClosetRpc.RpcCallParameters();
-      call.ServiceName = MessengerService_Proxy.ServiceName;
+      call.ServiceName = MessageService_Proxy.ServiceName;
       call.MethodName = "SendMessage";
       call.CallData = value.ToByteArray();
       var result = this.client.CallService(call);
@@ -492,11 +494,12 @@ namespace NanoMessanger
       }
     }
 
-    public MessageList GetPendingMessages()
+    public MessageList GetPendingMessages(Int32Value value)
     {
       var call = new global::ClosetRpc.RpcCallParameters();
-      call.ServiceName = MessengerService_Proxy.ServiceName;
+      call.ServiceName = MessageService_Proxy.ServiceName;
       call.MethodName = "GetPendingMessages";
+      call.CallData = value.ToByteArray();
       var result = this.client.CallService(call);
       if (result.Status != global::ClosetRpc.RpcStatus.Succeeded)
       {
@@ -527,14 +530,14 @@ namespace NanoMessanger
     }
   }
 
-  public class MessengerEvents_EventProxy
+  public class MessageEvents_EventProxy
   {
-    private static readonly string ServiceName = "nano_messanger.MessengerEvents";
+    private static readonly string ServiceName = "nano_messanger.MessageEvents";
 
     public void NewMessage(global::ClosetRpc.IEventSource eventSource)
     {
       var call = new global::ClosetRpc.RpcCallParameters();
-      call.ServiceName = MessengerEvents_EventProxy.ServiceName;
+      call.ServiceName = MessageEvents_EventProxy.ServiceName;
       call.MethodName = "NewMessage";
       call.IsAsync = true;
       eventSource.SendEvent(call);
@@ -543,7 +546,7 @@ namespace NanoMessanger
     public void OnlineStatusChanged(global::ClosetRpc.IEventSource eventSource, ContactInfo value)
     {
       var call = new global::ClosetRpc.RpcCallParameters();
-      call.ServiceName = MessengerEvents_EventProxy.ServiceName;
+      call.ServiceName = MessageEvents_EventProxy.ServiceName;
       call.MethodName = "OnlineStatusChanged";
       call.IsAsync = true;
       call.CallData = value.ToByteArray();
@@ -655,24 +658,24 @@ namespace NanoMessanger
     }
   }
 
-  public interface MessengerEventsEventInterface
+  public interface MessageEventsEventInterface
   {
     void OnNewMessage();
 
     void OnOnlineStatusChanged(ContactInfo value);
   }
 
-  public abstract class MessengerEvents_EventStubBase : global::ClosetRpc.IEventHandler
+  public abstract class MessageEvents_EventStubBase : global::ClosetRpc.IEventHandler
   {
     public string Name
     {
       get
       {
-        return "nano_messanger.MessengerEvents";
+        return "nano_messanger.MessageEvents";
       }
     }
 
-    protected abstract MessengerEventsEventInterface Impl { get; }
+    protected abstract MessageEventsEventInterface Impl { get; }
 
     public void CallMethod(global::ClosetRpc.IRpcCall rpcCall)
     {
@@ -693,16 +696,16 @@ namespace NanoMessanger
     }
   }
 
-  public class MessengerEvents_EventStub : MessengerEvents_EventStubBase
+  public class MessageEvents_EventStub : MessageEvents_EventStubBase
   {
-    private readonly MessengerEventsEventInterface impl;
+    private readonly MessageEventsEventInterface impl;
 
-    public MessengerEvents_EventStub(MessengerEventsEventInterface impl)
+    public MessageEvents_EventStub(MessageEventsEventInterface impl)
     {
       this.impl = impl;
     }
 
-    protected override MessengerEventsEventInterface Impl
+    protected override MessageEventsEventInterface Impl
     {
       get
       {
@@ -711,9 +714,9 @@ namespace NanoMessanger
     }
   }
 
-  public abstract class MessengerEvents_Listener : MessengerEvents_EventStubBase, MessengerEventsEventInterface
+  public abstract class MessageEvents_Listener : MessageEvents_EventStubBase, MessageEventsEventInterface
   {
-    protected override MessengerEventsEventInterface Impl
+    protected override MessageEventsEventInterface Impl
     {
       get
       {
@@ -726,11 +729,11 @@ namespace NanoMessanger
     public abstract void OnOnlineStatusChanged(ContactInfo value);
   }
 
-  public class MessengerEvents_Handler : MessengerEvents_EventStubBase
+  public class MessageEvents_Handler : MessageEvents_EventStubBase
   {
-    private readonly MessengerEventsEventInterface impl;
+    private readonly MessageEventsEventInterface impl;
 
-    public MessengerEvents_Handler()
+    public MessageEvents_Handler()
     {
       this.impl = new EventInterfaceImpl(this);
     }
@@ -739,7 +742,7 @@ namespace NanoMessanger
 
     public event EventHandler<ContactInfo> OnlineStatusChanged;
 
-    protected override MessengerEventsEventInterface Impl
+    protected override MessageEventsEventInterface Impl
     {
       get
       {
@@ -747,11 +750,11 @@ namespace NanoMessanger
       }
     }
 
-    private class EventInterfaceImpl : MessengerEventsEventInterface
+    private class EventInterfaceImpl : MessageEventsEventInterface
     {
-      private readonly MessengerEvents_Handler outer;
+      private readonly MessageEvents_Handler outer;
 
-      public EventInterfaceImpl(MessengerEvents_Handler outer)
+      public EventInterfaceImpl(MessageEvents_Handler outer)
       {
         this.outer = outer;
       }

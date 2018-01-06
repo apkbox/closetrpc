@@ -108,12 +108,18 @@ namespace ClosetRpc.Net.Util
                     }
 
                     this.PumpEvents();
+                    if (!this.IsConnected)
+                    {
+                        break;
+                    }
                 }
             }
 
             this.InvokeBindingStatusChanged(BindingStatus.Unbound);
             this.Shutdown(true);
         }
+
+        public bool IsConnected { get; set; }
 
         #endregion
     }

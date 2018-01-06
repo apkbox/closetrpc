@@ -31,6 +31,21 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Common.Logging, Version=3.4.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Common.Logging.3.4.1\lib\net40\Common.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Common.Logging.Core, Version=3.4.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Common.Logging.Core.3.4.1\lib\net40\Common.Logging.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Common.Logging.NLog4412, Version=3.4.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Common.Logging.NLog4412.3.4.1\lib\net40\Common.Logging.NLog4412.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Protobuf">
+      <HintPath>..\..\third_party\protobuf_dotnet\bin\Release\net45\Google.Protobuf.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NLog.4.4.12\lib\net45\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -41,11 +56,31 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controller.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ClosetRpc.Net.Protobuf\ClosetRpc.Net.Protobuf.csproj">
+      <Project>{569cb9b5-11e8-43c5-918a-b1f06b8e777d}</Project>
+      <Name>ClosetRpc.Net.Protobuf</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ClosetRpc.Net.Util\ClosetRpc.Net.Util.csproj">
+      <Project>{d56bbb2e-8400-4956-80f2-e22bc300d0ce}</Project>
+      <Name>ClosetRpc.Net.Util</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ClosetRpc.Net\ClosetRpc.Net.csproj">
+      <Project>{c69a1450-9088-46c4-808c-c6f7591ab3e8}</Project>
+      <Name>ClosetRpc.Net</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MessengerApi\MessengerApi.csproj">
+      <Project>{5ad1b670-1c59-43e4-b02b-133ce1c18085}</Project>
+      <Name>MessengerApi</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

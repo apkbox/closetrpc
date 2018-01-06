@@ -13,6 +13,7 @@ namespace ClosetRpc
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
+    using System.Linq;
     using System.Net.Sockets;
     using System.Threading;
 
@@ -75,6 +76,14 @@ namespace ClosetRpc
 
         #region Public Methods and Operators
 
+        public IEnumerable<IServerContext> GetActiveConnections()
+        {
+            lock (this.activeConnectionsLock)
+            {
+                return this.activeConnections.ToList();
+            }
+        }
+
         public void RegisterService(IRpcService service)
         {
             this.log.InfoFormat(
@@ -129,6 +138,12 @@ namespace ClosetRpc
 
                 if (channel != null)
                 {
+                    // TODO: This is not scalable to create thread for each connection.
+                    // Instead a thread pool and a non-blocking transport design
+                    // should be used. If transport's underlying implmentation does not
+                    // allow non-blocking scenarios, then transport should implement
+                    // if using threads, which in turn makes scenarios that use these
+                    // transports makes it unscalable.
                     this.log.Debug("Creating connection context and thread.");
                     var context = new ServerContext(this, channel, new Thread(this.ConnectionThread));
                     lock (this.activeConnectionsLock)

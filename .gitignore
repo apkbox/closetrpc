@@ -37,3 +37,5 @@
 /dotnet/MessengerClient/obj/
 /dotnet/MessengerServer/bin/
 /dotnet/MessengerServer/obj/
+/dotnet/MessengerClientUI/bin/
+/dotnet/MessengerClientUI/obj/

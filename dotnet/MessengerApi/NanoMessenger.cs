@@ -30,45 +30,46 @@ namespace NanoMessanger {
             "IAEoCSI4ChJBdXRoZW50aWNhdGlvbkRhdGESEAoIdXNlcm5hbWUYASABKAkS",
             "EAoIcGFzc3dvcmQYAiABKAkiIQoLU2Vzc2lvbkluZm8SEgoKc2Vzc2lvbktl",
             "eRgBIAEoCSJXCgtDb250YWN0SW5mbxIRCglmaXJzdE5hbWUYASABKAkSEAoI",
-            "bGFzdE5hbWUYAiABKAkSEAoIdXNlck5hbWUYAyABKAkSEQoJaXNfb25saW5l",
+            "bGFzdE5hbWUYAiABKAkSEAoIdXNlcm5hbWUYAyABKAkSEQoJaXNfb25saW5l",
             "GAQgASgIIjwKC0NvbnRhY3RMaXN0Ei0KCENvbnRhY3RzGAEgAygLMhsubmFu",
-            "b19tZXNzYW5nZXIuQ29udGFjdEluZm8iLAoHTWVzc2FnZRIQCgh1c2VyTmFt",
-            "ZRgBIAEoCRIPCgdtZXNzYWdlGAIgASgJIjgKC01lc3NhZ2VMaXN0EikKCE1l",
-            "c3NhZ2VzGAEgAygLMhcubmFub19tZXNzYW5nZXIuTWVzc2FnZTJXCg1TZXNz",
-            "aW9uRXZlbnRzEkAKDlNlc3Npb25FeHBpcmVkEhYuZ29vZ2xlLnByb3RvYnVm",
-            "LkVtcHR5GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5GgToiywBMoEDCgxMb2dp",
-            "blNlcnZpY2USSAoIUmVnaXN0ZXISIC5uYW5vX21lc3Nhbmdlci5SZWdpc3Ry",
-            "YXRpb25EYXRhGhouZ29vZ2xlLnByb3RvYnVmLkJvb2xWYWx1ZRJICgVMb2dp",
-            "bhIiLm5hbm9fbWVzc2FuZ2VyLkF1dGhlbnRpY2F0aW9uRGF0YRobLm5hbm9f",
-            "bWVzc2FuZ2VyLlNlc3Npb25JbmZvEjwKBkxvZ291dBIWLmdvb2dsZS5wcm90",
-            "b2J1Zi5FbXB0eRoaLmdvb2dsZS5wcm90b2J1Zi5Cb29sVmFsdWUSWAoYQ2hh",
-            "bmdlQXV0aGVudGljYXRpb25JbmZvEiAubmFub19tZXNzYW5nZXIuUmVnaXN0",
-            "cmF0aW9uRGF0YRoaLmdvb2dsZS5wcm90b2J1Zi5Cb29sVmFsdWUSRQoJUmVj",
-            "b25uZWN0EhwuZ29vZ2xlLnByb3RvYnVmLlN0cmluZ1ZhbHVlGhouZ29vZ2xl",
-            "LnByb3RvYnVmLkJvb2xWYWx1ZTKuAgoSQ29udGFjdExpc3RTZXJ2aWNlEkoK",
-            "DVNlYXJjaENvbnRhY3QSHC5nb29nbGUucHJvdG9idWYuU3RyaW5nVmFsdWUa",
-            "Gy5uYW5vX21lc3Nhbmdlci5Db250YWN0TGlzdBJBCgpBZGRDb250YWN0Ehsu",
-            "bmFub19tZXNzYW5nZXIuQ29udGFjdEluZm8aFi5nb29nbGUucHJvdG9idWYu",
-            "RW1wdHkSRQoNUmVtb3ZlQ29udGFjdBIcLmdvb2dsZS5wcm90b2J1Zi5TdHJp",
-            "bmdWYWx1ZRoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRJCCgtHZXRDb250YWN0",
-            "cxIWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRobLm5hbm9fbWVzc2FuZ2VyLkNv",
-            "bnRhY3RJbmZvMqEBCg9NZXNzZW5nZXJFdmVudHMSPAoKTmV3TWVzc2FnZRIW",
-            "Lmdvb2dsZS5wcm90b2J1Zi5FbXB0eRoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0",
-            "eRJKChNPbmxpbmVTdGF0dXNDaGFuZ2VkEhsubmFub19tZXNzYW5nZXIuQ29u",
-            "dGFjdEluZm8aFi5nb29nbGUucHJvdG9idWYuRW1wdHkaBOiLLAEynQEKEE1l",
-            "c3NlbmdlclNlcnZpY2USPgoLU2VuZE1lc3NhZ2USFy5uYW5vX21lc3Nhbmdl",
-            "ci5NZXNzYWdlGhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5EkkKEkdldFBlbmRp",
-            "bmdNZXNzYWdlcxIWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRobLm5hbm9fbWVz",
-            "c2FuZ2VyLk1lc3NhZ2VMaXN0QhCqAg1OYW5vTWVzc2FuZ2VyYgZwcm90bzM="));
+            "b19tZXNzYW5nZXIuQ29udGFjdEluZm8iOgoHTWVzc2FnZRIQCgh1c2VybmFt",
+            "ZRgBIAEoCRIMCgR0ZXh0GAIgASgJEg8KB29yZGluYWwYAyABKAUiOAoLTWVz",
+            "c2FnZUxpc3QSKQoITWVzc2FnZXMYASADKAsyFy5uYW5vX21lc3Nhbmdlci5N",
+            "ZXNzYWdlMlcKDVNlc3Npb25FdmVudHMSQAoOU2Vzc2lvbkV4cGlyZWQSFi5n",
+            "b29nbGUucHJvdG9idWYuRW1wdHkaFi5nb29nbGUucHJvdG9idWYuRW1wdHka",
+            "BOiLLAEygQMKDExvZ2luU2VydmljZRJICghSZWdpc3RlchIgLm5hbm9fbWVz",
+            "c2FuZ2VyLlJlZ2lzdHJhdGlvbkRhdGEaGi5nb29nbGUucHJvdG9idWYuQm9v",
+            "bFZhbHVlEkgKBUxvZ2luEiIubmFub19tZXNzYW5nZXIuQXV0aGVudGljYXRp",
+            "b25EYXRhGhsubmFub19tZXNzYW5nZXIuU2Vzc2lvbkluZm8SPAoGTG9nb3V0",
+            "EhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5GhouZ29vZ2xlLnByb3RvYnVmLkJv",
+            "b2xWYWx1ZRJYChhDaGFuZ2VBdXRoZW50aWNhdGlvbkluZm8SIC5uYW5vX21l",
+            "c3Nhbmdlci5SZWdpc3RyYXRpb25EYXRhGhouZ29vZ2xlLnByb3RvYnVmLkJv",
+            "b2xWYWx1ZRJFCglSZWNvbm5lY3QSHC5nb29nbGUucHJvdG9idWYuU3RyaW5n",
+            "VmFsdWUaGi5nb29nbGUucHJvdG9idWYuQm9vbFZhbHVlMqkCChJDb250YWN0",
+            "TGlzdFNlcnZpY2USRQoIRmluZFVzZXISHC5nb29nbGUucHJvdG9idWYuU3Ry",
+            "aW5nVmFsdWUaGy5uYW5vX21lc3Nhbmdlci5Db250YWN0TGlzdBJBCgpBZGRD",
+            "b250YWN0EhsubmFub19tZXNzYW5nZXIuQ29udGFjdEluZm8aFi5nb29nbGUu",
+            "cHJvdG9idWYuRW1wdHkSRQoNUmVtb3ZlQ29udGFjdBIcLmdvb2dsZS5wcm90",
+            "b2J1Zi5TdHJpbmdWYWx1ZRoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRJCCgtH",
+            "ZXRDb250YWN0cxIWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRobLm5hbm9fbWVz",
+            "c2FuZ2VyLkNvbnRhY3RMaXN0Mp8BCg1NZXNzYWdlRXZlbnRzEjwKCk5ld01l",
+            "c3NhZ2USFi5nb29nbGUucHJvdG9idWYuRW1wdHkaFi5nb29nbGUucHJvdG9i",
+            "dWYuRW1wdHkSSgoTT25saW5lU3RhdHVzQ2hhbmdlZBIbLm5hbm9fbWVzc2Fu",
+            "Z2VyLkNvbnRhY3RJbmZvGhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5GgToiywB",
+            "MqABCg5NZXNzYWdlU2VydmljZRI+CgtTZW5kTWVzc2FnZRIXLm5hbm9fbWVz",
+            "c2FuZ2VyLk1lc3NhZ2UaFi5nb29nbGUucHJvdG9idWYuRW1wdHkSTgoSR2V0",
+            "UGVuZGluZ01lc3NhZ2VzEhsuZ29vZ2xlLnByb3RvYnVmLkludDMyVmFsdWUa",
+            "Gy5uYW5vX21lc3Nhbmdlci5NZXNzYWdlTGlzdEIQqgINTmFub01lc3Nhbmdl",
+            "cmIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Google.Protobuf.WellKnownTypes.EmptyReflection.Descriptor, global::Google.Protobuf.WellKnownTypes.WrappersReflection.Descriptor, global::ClosetRpc.ClosetrpcTypesReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::NanoMessanger.RegistrationData), global::NanoMessanger.RegistrationData.Parser, new[]{ "Username", "Password", "Email", "FirstName", "LastName" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::NanoMessanger.AuthenticationData), global::NanoMessanger.AuthenticationData.Parser, new[]{ "Username", "Password" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::NanoMessanger.SessionInfo), global::NanoMessanger.SessionInfo.Parser, new[]{ "SessionKey" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::NanoMessanger.ContactInfo), global::NanoMessanger.ContactInfo.Parser, new[]{ "FirstName", "LastName", "UserName", "IsOnline" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::NanoMessanger.ContactInfo), global::NanoMessanger.ContactInfo.Parser, new[]{ "FirstName", "LastName", "Username", "IsOnline" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::NanoMessanger.ContactList), global::NanoMessanger.ContactList.Parser, new[]{ "Contacts" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::NanoMessanger.Message), global::NanoMessanger.Message.Parser, new[]{ "UserName", "Message_" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::NanoMessanger.Message), global::NanoMessanger.Message.Parser, new[]{ "Username", "Text", "Ordinal" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::NanoMessanger.MessageList), global::NanoMessanger.MessageList.Parser, new[]{ "Messages" }, null, null, null)
           }));
     }
@@ -593,7 +594,7 @@ namespace NanoMessanger {
     public ContactInfo(ContactInfo other) : this() {
       firstName_ = other.firstName_;
       lastName_ = other.lastName_;
-      userName_ = other.userName_;
+      username_ = other.username_;
       isOnline_ = other.isOnline_;
     }
 
@@ -624,14 +625,14 @@ namespace NanoMessanger {
       }
     }
 
-    /// <summary>Field number for the "userName" field.</summary>
-    public const int UserNameFieldNumber = 3;
-    private string userName_ = "";
+    /// <summary>Field number for the "username" field.</summary>
+    public const int UsernameFieldNumber = 3;
+    private string username_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string UserName {
-      get { return userName_; }
+    public string Username {
+      get { return username_; }
       set {
-        userName_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        username_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
@@ -661,7 +662,7 @@ namespace NanoMessanger {
       }
       if (FirstName != other.FirstName) return false;
       if (LastName != other.LastName) return false;
-      if (UserName != other.UserName) return false;
+      if (Username != other.Username) return false;
       if (IsOnline != other.IsOnline) return false;
       return true;
     }
@@ -671,7 +672,7 @@ namespace NanoMessanger {
       int hash = 1;
       if (FirstName.Length != 0) hash ^= FirstName.GetHashCode();
       if (LastName.Length != 0) hash ^= LastName.GetHashCode();
-      if (UserName.Length != 0) hash ^= UserName.GetHashCode();
+      if (Username.Length != 0) hash ^= Username.GetHashCode();
       if (IsOnline != false) hash ^= IsOnline.GetHashCode();
       return hash;
     }
@@ -691,9 +692,9 @@ namespace NanoMessanger {
         output.WriteRawTag(18);
         output.WriteString(LastName);
       }
-      if (UserName.Length != 0) {
+      if (Username.Length != 0) {
         output.WriteRawTag(26);
-        output.WriteString(UserName);
+        output.WriteString(Username);
       }
       if (IsOnline != false) {
         output.WriteRawTag(32);
@@ -710,8 +711,8 @@ namespace NanoMessanger {
       if (LastName.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(LastName);
       }
-      if (UserName.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(UserName);
+      if (Username.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Username);
       }
       if (IsOnline != false) {
         size += 1 + 1;
@@ -730,8 +731,8 @@ namespace NanoMessanger {
       if (other.LastName.Length != 0) {
         LastName = other.LastName;
       }
-      if (other.UserName.Length != 0) {
-        UserName = other.UserName;
+      if (other.Username.Length != 0) {
+        Username = other.Username;
       }
       if (other.IsOnline != false) {
         IsOnline = other.IsOnline;
@@ -755,7 +756,7 @@ namespace NanoMessanger {
             break;
           }
           case 26: {
-            UserName = input.ReadString();
+            Username = input.ReadString();
             break;
           }
           case 32: {
@@ -901,8 +902,9 @@ namespace NanoMessanger {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public Message(Message other) : this() {
-      userName_ = other.userName_;
-      message_ = other.message_;
+      username_ = other.username_;
+      text_ = other.text_;
+      ordinal_ = other.ordinal_;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -910,25 +912,36 @@ namespace NanoMessanger {
       return new Message(this);
     }
 
-    /// <summary>Field number for the "userName" field.</summary>
-    public const int UserNameFieldNumber = 1;
-    private string userName_ = "";
+    /// <summary>Field number for the "username" field.</summary>
+    public const int UsernameFieldNumber = 1;
+    private string username_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string UserName {
-      get { return userName_; }
+    public string Username {
+      get { return username_; }
       set {
-        userName_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        username_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
-    /// <summary>Field number for the "message" field.</summary>
-    public const int Message_FieldNumber = 2;
-    private string message_ = "";
+    /// <summary>Field number for the "text" field.</summary>
+    public const int TextFieldNumber = 2;
+    private string text_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string Message_ {
-      get { return message_; }
+    public string Text {
+      get { return text_; }
       set {
-        message_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        text_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "ordinal" field.</summary>
+    public const int OrdinalFieldNumber = 3;
+    private int ordinal_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int Ordinal {
+      get { return ordinal_; }
+      set {
+        ordinal_ = value;
       }
     }
 
@@ -945,16 +958,18 @@ namespace NanoMessanger {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (UserName != other.UserName) return false;
-      if (Message_ != other.Message_) return false;
+      if (Username != other.Username) return false;
+      if (Text != other.Text) return false;
+      if (Ordinal != other.Ordinal) return false;
       return true;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (UserName.Length != 0) hash ^= UserName.GetHashCode();
-      if (Message_.Length != 0) hash ^= Message_.GetHashCode();
+      if (Username.Length != 0) hash ^= Username.GetHashCode();
+      if (Text.Length != 0) hash ^= Text.GetHashCode();
+      if (Ordinal != 0) hash ^= Ordinal.GetHashCode();
       return hash;
     }
 
@@ -965,24 +980,31 @@ namespace NanoMessanger {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (UserName.Length != 0) {
+      if (Username.Length != 0) {
         output.WriteRawTag(10);
-        output.WriteString(UserName);
+        output.WriteString(Username);
       }
-      if (Message_.Length != 0) {
+      if (Text.Length != 0) {
         output.WriteRawTag(18);
-        output.WriteString(Message_);
+        output.WriteString(Text);
+      }
+      if (Ordinal != 0) {
+        output.WriteRawTag(24);
+        output.WriteInt32(Ordinal);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (UserName.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(UserName);
+      if (Username.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Username);
       }
-      if (Message_.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Message_);
+      if (Text.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Text);
+      }
+      if (Ordinal != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Ordinal);
       }
       return size;
     }
@@ -992,11 +1014,14 @@ namespace NanoMessanger {
       if (other == null) {
         return;
       }
-      if (other.UserName.Length != 0) {
-        UserName = other.UserName;
+      if (other.Username.Length != 0) {
+        Username = other.Username;
       }
-      if (other.Message_.Length != 0) {
-        Message_ = other.Message_;
+      if (other.Text.Length != 0) {
+        Text = other.Text;
+      }
+      if (other.Ordinal != 0) {
+        Ordinal = other.Ordinal;
       }
     }
 
@@ -1009,11 +1034,15 @@ namespace NanoMessanger {
             input.SkipLastField();
             break;
           case 10: {
-            UserName = input.ReadString();
+            Username = input.ReadString();
             break;
           }
           case 18: {
-            Message_ = input.ReadString();
+            Text = input.ReadString();
+            break;
+          }
+          case 24: {
+            Ordinal = input.ReadInt32();
             break;
           }
         }
