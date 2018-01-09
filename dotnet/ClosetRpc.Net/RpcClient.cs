@@ -26,7 +26,7 @@ namespace ClosetRpc
 
         private readonly Lazy<IProtocolObjectFactory> cachedFactory;
 
-        private readonly object connectLock = new object();
+        private readonly object channelLock = new object();
 
         private readonly ConcurrentQueue<Action> eventQueue = new ConcurrentQueue<Action>();
 
@@ -64,6 +64,12 @@ namespace ClosetRpc
             this.log.Debug("Client created.");
             this.cachedFactory = new Lazy<IProtocolObjectFactory>(this.CreateProtocolObjectFactory);
         }
+
+        #endregion
+
+        #region Public Properties
+
+        public bool IsConnected { get; private set; }
 
         #endregion
 
@@ -145,14 +151,15 @@ namespace ClosetRpc
 
         public void Connect()
         {
-            lock (this.connectLock)
+            lock (this.channelLock)
             {
-                if (this.channel != null)
+                if (this.IsConnected)
                 {
                     return;
                 }
 
                 this.channel = this.transport.Connect();
+                this.IsConnected = true;
             }
 
             this.EnsureReceiverThread();
@@ -193,8 +200,8 @@ namespace ClosetRpc
             }
 
             this.isRunning = false;
-            this.channel.Close();
-            this.channel = null;
+            this.CloseChannel();
+
             lock (this.pendingCallsLock)
             {
                 Monitor.PulseAll(this.pendingCallsLock);
@@ -261,6 +268,10 @@ namespace ClosetRpc
             return new ProtocolObjectFactory();
         }
 
+        protected virtual void OnDisconnected()
+        {
+        }
+
         private void AbortPendingCalls(RpcStatus reason)
         {
             Debug.Assert(Monitor.IsEntered(this.pendingCallsLock), "Pending calls lock must be held.");
@@ -302,6 +313,22 @@ namespace ClosetRpc
             }
         }
 
+        private void CloseChannel()
+        {
+            lock (this.channelLock)
+            {
+                if (this.channel != null)
+                {
+                    this.channel.Close();
+                    this.channel = null;
+                }
+
+                this.IsConnected = false;
+            }
+
+            this.OnDisconnected();
+        }
+
         private void EnsureConnection()
         {
             this.Connect();
@@ -326,9 +353,26 @@ namespace ClosetRpc
             }
         }
 
+        private Stream GetChannelStream()
+        {
+            Stream stream = null;
+            lock (this.channelLock)
+            {
+                if (!this.IsConnected)
+                {
+                    throw new IOException("Disconnected.");
+                }
+
+                stream = this.channel.Stream;
+            }
+
+            return stream;
+        }
+
         private void ReceiveAndHandleSingleMessage()
         {
-            var message = this.ProtocolObjectFactory.RpcMessageFromStream(this.channel.Stream);
+            var stream = this.GetChannelStream();
+            var message = this.ProtocolObjectFactory.RpcMessageFromStream(stream);
             this.log.TraceFormat("Received message {0}.", message.RequestId);
 
             // If call portion of the message is filled, then it is an event.
@@ -397,6 +441,7 @@ namespace ClosetRpc
                 }
                 catch (IOException ex)
                 {
+                    this.CloseChannel();
                     this.log.Debug("Exception in receiver thread. Disconnected?", ex);
                     lock (this.pendingCallsLock)
                     {
@@ -430,12 +475,14 @@ namespace ClosetRpc
             IRpcResult result = null;
             try
             {
+                var stream = this.GetChannelStream();
                 var call = this.ProtocolObjectFactory.BuildCall(callParameters);
-                this.ProtocolObjectFactory.WriteMessage(this.channel.Stream, requestId, call, null);
+                this.ProtocolObjectFactory.WriteMessage(stream, requestId, call, null);
                 this.log.TraceFormat("Asynchronous message sent {0}.", requestId);
             }
             catch (IOException ex)
             {
+                this.CloseChannel();
                 this.log.DebugFormat("Exception while sending a message {0}. Disconnected?", ex, requestId);
                 result = this.ProtocolObjectFactory.CreateRpcResult();
                 result.Status = RpcStatus.ChannelFailure;
@@ -470,12 +517,14 @@ namespace ClosetRpc
 
             try
             {
+                var stream = this.GetChannelStream();
                 var call = this.ProtocolObjectFactory.BuildCall(callParameters);
-                this.ProtocolObjectFactory.WriteMessage(this.channel.Stream, requestId, call, null);
+                this.ProtocolObjectFactory.WriteMessage(stream, requestId, call, null);
                 this.log.TraceFormat("Message sent {0}.", requestId);
             }
             catch (IOException ex)
             {
+                this.CloseChannel();
                 this.log.Debug("Exception while sending a message. Disconnected?", ex);
                 lock (this.pendingCallsLock)
                 {

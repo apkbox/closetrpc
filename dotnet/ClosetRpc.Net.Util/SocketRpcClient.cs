@@ -40,6 +40,18 @@ namespace ClosetRpc.Net.Util
 
         #endregion
 
+        #region Public Properties
+
+        public BindingStatus BindingStatus
+        {
+            get
+            {
+                return this.IsConnected ? BindingStatus.Bound : BindingStatus.Unbound;
+            }
+        }
+
+        #endregion
+
         #region Public Methods and Operators
 
         public void Bind()
@@ -74,6 +86,12 @@ namespace ClosetRpc.Net.Util
         #endregion
 
         #region Methods
+
+        protected override void OnDisconnected()
+        {
+            base.OnDisconnected();
+            this.InvokeBindingStatusChanged(BindingStatus.Unbound);
+        }
 
         private void InvokeBindingStatusChanged(BindingStatus status)
         {
@@ -118,8 +136,6 @@ namespace ClosetRpc.Net.Util
             this.InvokeBindingStatusChanged(BindingStatus.Unbound);
             this.Shutdown(true);
         }
-
-        public bool IsConnected { get; set; }
 
         #endregion
     }

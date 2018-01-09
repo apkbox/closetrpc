@@ -13,18 +13,18 @@ namespace ClosetRpc.Net.Util
 
     public class BindingStatusChangedEventArgs : EventArgs
     {
-        #region Fields
-
-        private BindingStatus status;
-
-        #endregion
-
         #region Constructors and Destructors
 
         public BindingStatusChangedEventArgs(BindingStatus status)
         {
-            this.status = status;
+            this.Status = status;
         }
+
+        #endregion
+
+        #region Public Properties
+
+        public BindingStatus Status { get; private set; }
 
         #endregion
     }

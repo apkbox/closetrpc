@@ -6,11 +6,17 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("ClosetRpc.Net.Util")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ClosetRpc.Net.Util")]
-[assembly: AssemblyCopyright("Copyright ©  2018")]
+[assembly: AssemblyDescription("Utility library for ClosetRpc.Net")]
+
+#if DEBUG
+[assembly: AssemblyConfiguration("Debug")]
+#else
+[assembly: AssemblyConfiguration("Release")]
+#endif
+
+[assembly: AssemblyCompany("Alex Kozlov")]
+[assembly: AssemblyProduct("ClosetRpc.Net")]
+[assembly: AssemblyCopyright("Copyright ©  2017 Alex Kozlov.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,5 +38,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
