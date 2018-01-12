@@ -26,6 +26,7 @@ namespace ClosetRpc.Test
             var server = new RpcServer(null);
 
             var sc = new ServerContext(server, channel, thread);
+            Assert.That(sc.Server, Is.SameAs(server));
             Assert.That(sc.Channel, Is.SameAs(channel));
             Assert.That(sc.Thread, Is.SameAs(thread));
             Assert.That(sc.ObjectManager, Is.Not.Null);

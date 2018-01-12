@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$-alpha</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>https://github.com/apkbox/closetrpc/raw/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/apkbox/closetrpc/</projectUrl>
+    <iconUrl>https://github.com/apkbox/closetrpc/raw/master/logo.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <releaseNotes>Initial release.</releaseNotes>
+    <copyright>Copyright 2017 Alex Kozlov</copyright>
+    <tags>RPC C# .NET</tags>
+    <dependencies>
+      <dependency id="ClosetRpc.Net" version="1.0" />
+      <dependency id="Common.Logging" version="3.0" />
+    </dependencies>
+  </metadata>
+</package>

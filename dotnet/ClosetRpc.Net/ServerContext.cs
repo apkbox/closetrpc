@@ -9,9 +9,10 @@
 
 namespace ClosetRpc
 {
+    using System.Collections.Generic;
     using System.Threading;
 
-    public class ServerContext : IServerContext
+    internal class ServerContext : IServerContext
     {
         #region Constructors and Destructors
 
@@ -29,17 +30,27 @@ namespace ClosetRpc
 
         #region Public Properties
 
+        public IEnumerable<IServerContext> ActiveConnections
+        {
+            get
+            {
+                return this.Server.GetActiveConnections();
+            }
+        }
+
         public IChannel Channel { get; set; }
 
         public IEventSource GlobalEventSource { get; private set; }
 
         public IEventSource LocalEventSource { get; private set; }
 
-        public ObjectManager ObjectManager { get; private set; }
+        public IObjectManager ObjectManager { get; private set; }
 
         public RpcServer Server { get; private set; }
 
         public Thread Thread { get; set; }
+
+        public object UserData { get; set; }
 
         #endregion
     }

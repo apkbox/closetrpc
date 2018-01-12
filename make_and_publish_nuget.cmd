@@ -10,13 +10,15 @@ set BASE_PATH=%~dp0
 set OUTPUT_DIR=%BASE_PATH%\build
 set NUGET_PACKAGE_DIR=%OUTPUT_DIR%\packages
 set NUGET_LOCAL_FEED=%1
+set BUILD_CONFIGURATION=Debug
 
 rem msbuild /m /p:Configuration=Release /p:Platform="Any CPU" "%BASE_PATH%\closetrpc_dotnet.sln"
 
 rmdir /s/q %NUGET_PACKAGE_DIR%
 
-nuget pack "%BASE_PATH%\dotnet\ClosetRpc.Net" -Properties Configuration=Release -OutputDirectory "%NUGET_PACKAGE_DIR%" -build
-nuget pack "%BASE_PATH%\dotnet\ClosetRpc.Net.Protobuf" -Properties Configuration=Release -OutputDirectory "%NUGET_PACKAGE_DIR%" -build
+nuget pack "%BASE_PATH%\dotnet\ClosetRpc.Net" -Properties Configuration=%BUILD_CONFIGURATION% -OutputDirectory "%NUGET_PACKAGE_DIR%" -build -symbols -IncludeReferencedProjects
+nuget pack "%BASE_PATH%\dotnet\ClosetRpc.Net.Protobuf" -Properties Configuration=%BUILD_CONFIGURATION% -OutputDirectory "%NUGET_PACKAGE_DIR%" -build -symbols -IncludeReferencedProjects
+nuget pack "%BASE_PATH%\dotnet\ClosetRpc.Net.Util" -Properties Configuration=%BUILD_CONFIGURATION% -OutputDirectory "%NUGET_PACKAGE_DIR%" -build -symbols -IncludeReferencedProjects
 
 if "%NUGET_LOCAL_FEED%"=="" (
 	echo.

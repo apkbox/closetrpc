@@ -9,10 +9,17 @@
 
 namespace ClosetRpc
 {
+    /// <summary>
+    /// Provides a method to send events.
+    /// </summary>
     public interface IEventSource
     {
         #region Public Methods and Operators
 
+        /// <summary>
+        /// Sends an event.
+        /// </summary>
+        /// <param name="rpcCall">Event parameters.</param>
         void SendEvent(RpcCallParameters rpcCall);
 
         #endregion

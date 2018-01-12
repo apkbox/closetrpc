@@ -11,6 +11,9 @@ namespace ClosetRpc
 {
     using System.Net.Sockets;
 
+    /// <summary>
+    /// The client transport implementation over TCP sockets.
+    /// </summary>
     public class SocketClientTransport : IClientTransport
     {
         #region Fields
@@ -23,6 +26,11 @@ namespace ClosetRpc
 
         #region Constructors and Destructors
 
+        /// <summary>
+        /// Initializes new instance of the <see cref="SocketClientTransport"/> class.
+        /// </summary>
+        /// <param name="hostname">TCP/IP host name.</param>
+        /// <param name="port">Port number.</param>
         public SocketClientTransport(string hostname, int port)
         {
             this.hostname = hostname;
@@ -33,6 +41,7 @@ namespace ClosetRpc
 
         #region Public Methods and Operators
 
+        /// <inheritdoc />
         public IChannel Connect()
         {
             var tcpClient = new TcpClient();

@@ -138,6 +138,7 @@ void GetSourcePrologue(pb::io::Printer &printer,
     printer.Indent();
     printer.Print(vars, "using System;\n");
     printer.Print(vars, "using Google.Protobuf;\n");
+    printer.Print(vars, "using Google.Protobuf.WellKnownTypes;\n");
     printer.Outdent();
     printer.Print(vars, "\n");
   }

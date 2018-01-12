@@ -9,6 +9,9 @@
 
 namespace ClosetRpc
 {
+    /// <summary>
+    /// Provides methods to implement transient object manager.
+    /// </summary>
     public interface IObjectManager
     {
         #region Public Methods and Operators

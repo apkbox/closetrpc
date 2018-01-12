@@ -197,7 +197,7 @@ void GenerateEventHandlerInvocation(pb::io::Printer &printer,
   if (has_input)
     printer.Print("handler(this, value);\n");
   else
-    printer.Print("handler(this);\n");
+    printer.Print("handler(this, EventArgs.Empty);\n");
 
   printer.Outdent();
   printer.Print(vars, "}\n");
