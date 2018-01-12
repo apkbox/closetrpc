@@ -13,7 +13,7 @@ namespace ClosetRpc
     using System.Collections.Generic;
     using System.Data;
 
-    public class ObjectManager : IObjectManager
+    internal class ObjectManager : IObjectManager
     {
         #region Fields
 

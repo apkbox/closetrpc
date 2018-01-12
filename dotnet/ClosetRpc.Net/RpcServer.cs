@@ -21,6 +21,9 @@ namespace ClosetRpc
 
     using Common.Logging;
 
+    /// <summary>
+    /// RPC server.
+    /// </summary>
     public class RpcServer
     {
         #region Fields
@@ -45,6 +48,10 @@ namespace ClosetRpc
 
         #region Constructors and Destructors
 
+        /// <summary>
+        /// Initializes the RPC server using specified transport.
+        /// </summary>
+        /// <param name="transport">Transport instance.</param>
         public RpcServer(IServerTransport transport)
         {
             this.transport = transport;
@@ -58,12 +65,19 @@ namespace ClosetRpc
 
         #region Public Properties
 
+        /// <summary>
+        /// Gets an event source that allows to send an event to all active connections.
+        /// </summary>
         public IEventSource EventSource { get; private set; }
 
         #endregion
 
         #region Properties
 
+        /// <summary>
+        /// Gets a protocol object factory instance that is used to construct
+        /// and read RPC protocol messages.
+        /// </summary>
         protected IProtocolObjectFactory ProtocolObjectFactory
         {
             get
@@ -76,6 +90,18 @@ namespace ClosetRpc
 
         #region Public Methods and Operators
 
+        /// <summary>
+        /// Gets snapshot of active connection contexts.
+        /// </summary>
+        /// <returns>
+        /// Collection of active connection contexts.
+        /// </returns>
+        /// <remarks>
+        /// The function allows to obtain local event source
+        /// to send events to a specific client.
+        /// Note that to send event to all clients <see cref="EventSource"/> is
+        /// more efficient.
+        /// </remarks>
         public IEnumerable<IServerContext> GetActiveConnections()
         {
             lock (this.activeConnectionsLock)
@@ -84,6 +110,10 @@ namespace ClosetRpc
             }
         }
 
+        /// <summary>
+        /// Registers a service instance.
+        /// </summary>
+        /// <param name="service">Service instance.</param>
         public void RegisterService(IRpcService service)
         {
             this.log.InfoFormat(
@@ -93,6 +123,11 @@ namespace ClosetRpc
             this.objectManager.RegisterService(service);
         }
 
+        /// <summary>
+        /// Registers a service instance with a custom interface name.
+        /// </summary>
+        /// <param name="service">Service instance.</param>
+        /// <param name="serviceName">Service interface name.</param>
         public void RegisterService(IRpcServiceStub service, string serviceName)
         {
             this.log.InfoFormat(
@@ -102,6 +137,12 @@ namespace ClosetRpc
             this.objectManager.RegisterService(service, serviceName);
         }
 
+        /// <summary>
+        /// Starts synchronously listening for incoming connections.
+        /// </summary>
+        /// <remarks>
+        /// The function quits when <see cref="Shutdown"/> is called.
+        /// </remarks>
         public void Run()
         {
             this.log.Info("Running...");
@@ -144,8 +185,10 @@ namespace ClosetRpc
                     // allow non-blocking scenarios, then transport should implement
                     // if using threads, which in turn makes scenarios that use these
                     // transports makes it unscalable.
-                    this.log.Debug("Creating connection context and thread.");
-                    var context = new ServerContext(this, channel, new Thread(this.ConnectionThread));
+                    this.log.Debug("Connection accepted. Creating connection context and thread.");
+                    var thread = new Thread(this.ConnectionThread);
+                    thread.Name = "RpcServerConnectionThread";
+                    var context = new ServerContext(this, channel, thread);
                     lock (this.activeConnectionsLock)
                     {
                         this.activeConnections.Add(context);
@@ -222,6 +265,14 @@ namespace ClosetRpc
             }
         }
 
+        /// <summary>
+        /// Creates an instance of protocol object factory.
+        /// </summary>
+        /// <returns>A new protocol object factory instance.</returns>
+        /// <remarks>
+        /// The returned instance is cached. The derived class can override
+        /// this method to implement custom control protocol.
+        /// </remarks>
         protected virtual IProtocolObjectFactory CreateProtocolObjectFactory()
         {
             return new ProtocolObjectFactory();

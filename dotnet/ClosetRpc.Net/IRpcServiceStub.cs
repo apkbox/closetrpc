@@ -9,6 +9,9 @@
 
 namespace ClosetRpc
 {
+    /// <summary>
+    /// Provides interface for RPC server to call when call message is received.
+    /// </summary>
     public interface IRpcServiceStub
     {
         #region Public Methods and Operators

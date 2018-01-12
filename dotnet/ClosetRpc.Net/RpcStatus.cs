@@ -9,6 +9,9 @@
 
 namespace ClosetRpc
 {
+    /// <summary>
+    /// Status of RPC call.
+    /// </summary>
     public enum RpcStatus
     {
         /// <summary>

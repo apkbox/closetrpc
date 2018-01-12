@@ -44,7 +44,7 @@ namespace ClosetRpc
 
         public IEventSource LocalEventSource { get; private set; }
 
-        public ObjectManager ObjectManager { get; private set; }
+        public IObjectManager ObjectManager { get; private set; }
 
         public RpcServer Server { get; private set; }
 

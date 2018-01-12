@@ -20,6 +20,9 @@ namespace ClosetRpc
 
     using Common.Logging;
 
+    /// <summary>
+    /// RPC client.
+    /// </summary>
     public class RpcClient
     {
         #region Fields
@@ -58,6 +61,10 @@ namespace ClosetRpc
 
         #region Constructors and Destructors
 
+        /// <summary>
+        /// Initializes RPC client instance.
+        /// </summary>
+        /// <param name="transport">Transport instance.</param>
         public RpcClient(IClientTransport transport)
         {
             this.transport = transport;
@@ -69,12 +76,19 @@ namespace ClosetRpc
 
         #region Public Properties
 
+        /// <summary>
+        /// Gets a value indicating whether the client is connected to the remote peer.
+        /// </summary>
         public bool IsConnected { get; private set; }
 
         #endregion
 
         #region Properties
 
+        /// <summary>
+        /// Gets a protocol object factory instance that is used to construct
+        /// and read RPC protocol messages.
+        /// </summary>
         protected IProtocolObjectFactory ProtocolObjectFactory
         {
             get
@@ -87,14 +101,23 @@ namespace ClosetRpc
 
         #region Public Methods and Operators
 
+        /// <summary>
+        /// Add an event handler that allows to listen to events sent by the remote peer.
+        /// </summary>
+        /// <param name="handler">Handler instance.</param>
         public void AddEventListener(IEventHandler handler)
         {
             this.eventServiceManager.RegisterHandler(handler);
         }
 
-        public void AddEventListener(IEventHandlerStub handler, string name)
+        /// <summary>
+        /// Add and event handler that allows to listen to events sent by the remote peer.
+        /// </summary>
+        /// <param name="handler">Handler instance.</param>
+        /// <param name="eventInterfaceName">Event interface name.</param>
+        public void AddEventListener(IEventHandlerStub handler, string eventInterfaceName)
         {
-            this.eventServiceManager.RegisterHandler(handler, name);
+            this.eventServiceManager.RegisterHandler(handler, eventInterfaceName);
         }
 
         /// <summary>
@@ -118,6 +141,12 @@ namespace ClosetRpc
         /// </returns>
         public IRpcResult CallService(RpcCallParameters rpcCallParameters)
         {
+            this.log.DebugFormat(
+                "Calling service {0}.{1} (async:{2})",
+                rpcCallParameters.ServiceName,
+                rpcCallParameters.MethodName,
+                rpcCallParameters.IsAsync);
+
             this.EnsureConnection();
 
             uint requestId;
@@ -125,6 +154,8 @@ namespace ClosetRpc
             {
                 requestId = ++this.lastRequestId;
             }
+
+            this.log.TraceFormat("Request ID {0}", requestId);
 
             IRpcResult result;
             if (rpcCallParameters.IsAsync)
@@ -149,22 +180,35 @@ namespace ClosetRpc
             return result;
         }
 
+        /// <summary>
+        /// Connects to the remote peer synchronously.
+        /// </summary>
         public void Connect()
         {
+            this.log.Trace("Connecting.");
             lock (this.channelLock)
             {
                 if (this.IsConnected)
                 {
+                    this.log.Trace("Already connected.");
                     return;
                 }
 
+                this.log.Trace("Creating channel.");
                 this.channel = this.transport.Connect();
                 this.IsConnected = true;
+                Monitor.PulseAll(this.channelLock);
+                this.log.Trace("Connected.");
             }
 
             this.EnsureReceiverThread();
         }
 
+        /// <summary>
+        /// Pumps available events from the by and calls appropriate event handler.
+        /// </summary>
+        /// <returns>Returns true if there are more events in the queue or false
+        /// if event queue is empty.</returns>
         public bool PumpEvents()
         {
             Action pendingEvent;
@@ -196,7 +240,8 @@ namespace ClosetRpc
         {
             if (waitForCompletion)
             {
-                throw new NotImplementedException();
+                // TODO: do actual implementation
+                // throw new NotImplementedException();
             }
 
             this.isRunning = false;
@@ -225,16 +270,33 @@ namespace ClosetRpc
         }
 
         // TODO: Replace with a method that returns WaitHandle.
+        /// <summary>
+        /// Waits for events for specified amount of time.
+        /// </summary>
+        /// <param name="millisecondsTimeout">Timeout in milliseconds.</param>
+        /// <returns>Returns true if events are available, or false if event queue is empty or
+        /// client is not connected.</returns>
         public bool WaitForEvents(int millisecondsTimeout)
         {
             return this.WaitForEvents(new TimeSpan(0, 0, 0, 0, millisecondsTimeout));
         }
 
+        /// <summary>
+        /// Waits for events.
+        /// </summary>
+        /// <returns>Returns true if events are available, or false if event queue is empty or
+        /// client is not connected.</returns>
         public bool WaitForEvents()
         {
             return this.WaitForEvents(-1);
         }
 
+        /// <summary>
+        /// Waits for events.
+        /// </summary>
+        /// <param name="timeout">Timeout amount.</param>
+        /// <returns>Returns true if events are available, or false if event queue is empty or
+        /// client is not connected.</returns>
         public bool WaitForEvents(TimeSpan timeout)
         {
             if (!this.isRunning)
@@ -263,17 +325,29 @@ namespace ClosetRpc
 
         #region Methods
 
+        /// <summary>
+        /// Creates an instance of protocol object factory.
+        /// </summary>
+        /// <returns>A new protocol object factory instance.</returns>
+        /// <remarks>
+        /// The returned instance is cached. The derived class can override
+        /// this method to implement custom control protocol.
+        /// </remarks>
         protected virtual IProtocolObjectFactory CreateProtocolObjectFactory()
         {
             return new ProtocolObjectFactory();
         }
 
+        /// <summary>
+        /// Called when client is disconnected from server.
+        /// </summary>
         protected virtual void OnDisconnected()
         {
         }
 
         private void AbortPendingCalls(RpcStatus reason)
         {
+            this.log.Debug("Aborting all pending calls.");
             Debug.Assert(Monitor.IsEntered(this.pendingCallsLock), "Pending calls lock must be held.");
 
             foreach (var pendingCall in this.pendingCalls)
@@ -294,6 +368,7 @@ namespace ClosetRpc
 
             lock (this.pendingCallsLock)
             {
+                this.log.TraceFormat("Waiting for reply on request {0}.", requestId);
                 while (true)
                 {
                     PendingCall pendingCall;
@@ -304,6 +379,7 @@ namespace ClosetRpc
                         {
                             var result = pendingCall.Result;
                             this.pendingCalls.Remove(requestId);
+                            this.log.TraceFormat("Found reply on request {0} with status {1}.", requestId, result);
                             return result;
                         }
                     }
@@ -317,13 +393,20 @@ namespace ClosetRpc
         {
             lock (this.channelLock)
             {
+                this.log.Debug("Closing the channel.");
                 if (this.channel != null)
                 {
                     this.channel.Close();
                     this.channel = null;
+                    this.log.Debug("Channel closed.");
+                }
+                else
+                {
+                    this.log.Trace("Channel was not open.");
                 }
 
                 this.IsConnected = false;
+                Monitor.PulseAll(this.channelLock);
             }
 
             this.OnDisconnected();
@@ -342,11 +425,14 @@ namespace ClosetRpc
         {
             lock (this.receiveThreadInitLock)
             {
+                this.log.Trace("Ensuring receiver thread.");
                 if (this.receiverThread != null)
                 {
+                    this.log.Trace("Receiver thread already running.");
                     return;
                 }
 
+                this.log.Trace("Creating a new receiver thread.");
                 this.receiverThread = new Thread(this.ReceiverThread);
                 this.receiverThread.Name = "RpcReceiverThread";
                 this.receiverThread.Start();
@@ -355,7 +441,7 @@ namespace ClosetRpc
 
         private Stream GetChannelStream()
         {
-            Stream stream = null;
+            Stream stream;
             lock (this.channelLock)
             {
                 if (!this.IsConnected)
@@ -371,6 +457,7 @@ namespace ClosetRpc
 
         private void ReceiveAndHandleSingleMessage()
         {
+            this.log.Trace("Waiting for message");
             var stream = this.GetChannelStream();
             var message = this.ProtocolObjectFactory.RpcMessageFromStream(stream);
             this.log.TraceFormat("Received message {0}.", message.RequestId);
@@ -441,15 +528,21 @@ namespace ClosetRpc
                 }
                 catch (IOException ex)
                 {
-                    this.CloseChannel();
                     this.log.Debug("Exception in receiver thread. Disconnected?", ex);
+                    this.CloseChannel();
                     lock (this.pendingCallsLock)
                     {
                         this.AbortPendingCalls(RpcStatus.ChannelFailure);
                         Monitor.PulseAll(this.pendingCallsLock);
                     }
 
-                    Thread.Sleep(500);
+                    if (this.isRunning)
+                    {
+                        lock (this.channelLock)
+                        {
+                            Monitor.Wait(this.channelLock, 3000);
+                        }
+                    }
                 }
             }
 
@@ -482,8 +575,8 @@ namespace ClosetRpc
             }
             catch (IOException ex)
             {
-                this.CloseChannel();
                 this.log.DebugFormat("Exception while sending a message {0}. Disconnected?", ex, requestId);
+                this.CloseChannel();
                 result = this.ProtocolObjectFactory.CreateRpcResult();
                 result.Status = RpcStatus.ChannelFailure;
             }
@@ -510,7 +603,7 @@ namespace ClosetRpc
             lock (this.pendingCallsLock)
             {
                 this.pendingCalls.Add(requestId, new PendingCall());
-                this.log.TraceFormat("Message {0} pending reply.", requestId);
+                this.log.TraceFormat("Registered request {0} to wait for reply.", requestId);
             }
 
             IRpcResult result = null;
@@ -524,8 +617,8 @@ namespace ClosetRpc
             }
             catch (IOException ex)
             {
-                this.CloseChannel();
                 this.log.Debug("Exception while sending a message. Disconnected?", ex);
+                this.CloseChannel();
                 lock (this.pendingCallsLock)
                 {
                     if (!this.pendingCalls.ContainsKey(requestId))
