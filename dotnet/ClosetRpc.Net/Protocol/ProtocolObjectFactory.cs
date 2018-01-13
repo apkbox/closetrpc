@@ -22,6 +22,14 @@ namespace ClosetRpc.Protocol
 
         #endregion
 
+        #region Fields
+
+        private readonly object readLock = new object();
+
+        private readonly object writeLock = new object();
+
+        #endregion
+
         #region Public Methods and Operators
 
         public IRpcCall BuildCall(RpcCallParameters callParameters)
@@ -44,16 +52,20 @@ namespace ClosetRpc.Protocol
             using (var reader = new BinaryReader(stream, Encoding.UTF8, true))
             {
                 var message = new RpcMessage();
-                message.RequestId = reader.ReadUInt32();
-                var contentFlags = reader.ReadByte();
-                if ((contentFlags & ProtocolObjectFactory.HasCallFlag) != 0)
-                {
-                    message.Call = new RpcCall(reader);
-                }
 
-                if ((contentFlags & ProtocolObjectFactory.HasResultFlag) != 0)
+                lock (this.readLock)
                 {
-                    message.Result = new RpcResult(reader);
+                    message.RequestId = reader.ReadUInt32();
+                    var contentFlags = reader.ReadByte();
+                    if ((contentFlags & ProtocolObjectFactory.HasCallFlag) != 0)
+                    {
+                        message.Call = new RpcCall(reader);
+                    }
+
+                    if ((contentFlags & ProtocolObjectFactory.HasResultFlag) != 0)
+                    {
+                        message.Result = new RpcResult(reader);
+                    }
                 }
 
                 return message;
@@ -62,23 +74,29 @@ namespace ClosetRpc.Protocol
 
         public void WriteMessage(Stream stream, uint requestId, IRpcCall call, IRpcResult result)
         {
+            // TODO: It may be more efficient to write complete request to a memory buffer first
+            // and then write into the stream to avoid blocking other threads while
+            // data actually being serialized.
             using (var writer = new BinaryWriter(stream, Encoding.UTF8, true))
             {
-                writer.Write(requestId);
-
-                byte contentFlags = 0;
-                contentFlags |= call != null ? ProtocolObjectFactory.HasCallFlag : (byte)0;
-                contentFlags |= result != null ? ProtocolObjectFactory.HasResultFlag : (byte)0;
-                writer.Write(contentFlags);
-
-                if (call != null)
+                lock (this.writeLock)
                 {
-                    ((RpcCall)call).Serialize(writer);
-                }
+                    writer.Write(requestId);
 
-                if (result != null)
-                {
-                    ((RpcResult)result).Serialize(writer);
+                    byte contentFlags = 0;
+                    contentFlags |= call != null ? ProtocolObjectFactory.HasCallFlag : (byte)0;
+                    contentFlags |= result != null ? ProtocolObjectFactory.HasResultFlag : (byte)0;
+                    writer.Write(contentFlags);
+
+                    if (call != null)
+                    {
+                        ((RpcCall)call).Serialize(writer);
+                    }
+
+                    if (result != null)
+                    {
+                        ((RpcResult)result).Serialize(writer);
+                    }
                 }
             }
         }
